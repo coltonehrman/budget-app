@@ -1,0 +1,20 @@
+{
+  "name": "enterprise-app",
+  "version": "0.0.0",
+  "description": "Example enterprise app with everything you need.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "author": "Colton Ehrman <coltonje95@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "3.1.0"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  }
+}
