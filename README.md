@@ -7,6 +7,7 @@
 1. [Husky](#husky)
 1. [Lint-Staged](#lint-staged)
 1. [Commitizen](#commitizen)
+1. [ESLint](#eslint)
 1. [Prettier](#prettier)
 1. [TypeScript](#typescript)
 
@@ -39,6 +40,12 @@ Lives in `package.json`, under **config.commitizen**.
 #### Commands
 
 - `git commit` - When running this, **commitzen** will take over because of **husky** hook integration.
+
+### [ESLint](https://eslint.org/)
+
+#### Config
+
+1. `.eslintrc.json`
 
 ### [Prettier](https://github.com/prettier/prettier)
 
