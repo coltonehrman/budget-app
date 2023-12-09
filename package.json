@@ -10,6 +10,7 @@
   "author": "Colton Ehrman <coltonje95@gmail.com>",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.10.4",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.55.0",

@@ -4,13 +4,19 @@
 
 ## Tools
 
+1. [Husky](#husky)
+1. [Lint-Staged](#lint-staged)
+1. [Commitizen](#commitizen)
+1. [Prettier](#prettier)
+1. [TypeScript](#typescript)
+
 ### [Husky](https://github.com/typicode/husky)
 
 Integration with git hooks to allow for triggering events during git lifecyle (ie: git commit).
 
 Was setup initially in project by running `npx husky install`. _This command does not have to be ran again._
 
-#### Files
+#### Config
 
 1. `.husky/*`
 
@@ -44,11 +50,13 @@ CLI tool for formatting files in your project. Keeps formatting consitent with a
 - `npx prettier . --check`
 - `npx prettier . --write`
 
-#### Files
+#### Config
 
-1. `.prettierrc`
 1. `.prettierignore`
+1. `.prettierrc`
+
+### [TypeScript](https://www.typescriptlang.org/)
 
 #### Config
 
-- `.prettierrc`
+1. `tsconfig.json`
