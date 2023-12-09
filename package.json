@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install",
-    "cm": "cz"
+    "prepare": "husky install"
   },
   "author": "Colton Ehrman <coltonje95@gmail.com>",
   "license": "ISC",
@@ -24,11 +23,6 @@
     "lint-staged": "^15.2.0",
     "prettier": "3.1.0",
     "typescript": "^5.3.3"
-  },
-  "husky": {
-    "hooks": {
-      "prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
-    }
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
