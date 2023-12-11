@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "description": "Example enterprise app with everything you need.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
   },
@@ -11,7 +14,10 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.10.4",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@vitejs/plugin-react": "^4.2.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
@@ -23,7 +29,8 @@
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "prettier": "3.1.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite": "^5.0.7"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
@@ -32,5 +39,15 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/inter": "^5.0.16",
+    "@mui/icons-material": "^5.14.19",
+    "@mui/joy": "^5.0.0-beta.17",
+    "@mui/material": "^5.14.20",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
