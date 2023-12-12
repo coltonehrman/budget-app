@@ -1,19 +1,31 @@
 import React, { useState } from "react";
-import { type State } from "./AddBudgetItemModal";
 import BudgetItemModal from "./BudgetItemModal";
 
-export default function EditBudgetItemModal({
+export interface State {
+  name: string;
+  occurence?: "daily" | "weekly" | "bi-weekly" | "monthly" | "yearly" | null;
+  type: "expense" | "income";
+  amount: number;
+}
+
+const DEFAULT_STATE: State = {
+  name: "",
+  occurence: "monthly",
+  type: "expense",
+  amount: 1000,
+};
+
+export default function AddBudgetItemModal({
   open,
   setOpen,
-  itemState,
-  onEditItem,
+  addItem,
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  itemState: State;
-  onEditItem: (item: State) => void;
+  addItem: (item: State) => void;
 }): JSX.Element {
-  const [{ name, type, amount }, setState] = useState<State>(itemState);
+  const [{ name, occurence, type, amount }, setState] =
+    useState<State>(DEFAULT_STATE);
 
   return (
     <BudgetItemModal
@@ -22,12 +34,22 @@ export default function EditBudgetItemModal({
       setOpen={setOpen}
       state={{
         name,
+        occurence,
         type,
         amount,
       }}
       onNameChange={(event) => {
         setState({
           name: event.target.value,
+          occurence,
+          type,
+          amount,
+        });
+      }}
+      onOccurenceChange={(_event, newOccurence) => {
+        setState({
+          name,
+          occurence: newOccurence,
           type,
           amount,
         });
@@ -38,6 +60,7 @@ export default function EditBudgetItemModal({
 
         setState({
           name,
+          occurence,
           type: newType,
           amount,
         });
@@ -46,18 +69,20 @@ export default function EditBudgetItemModal({
         const newNum = Number(event.target.value);
         setState({
           name,
+          occurence,
           type,
           amount: Number.isNaN(newNum) ? 0 : newNum,
         });
       }}
       onSubmit={() => {
-        setOpen(false);
-
-        onEditItem({
+        addItem({
           name,
+          occurence,
           type,
           amount,
         });
+
+        setOpen(false);
       }}
     />
   );

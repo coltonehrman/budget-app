@@ -12,10 +12,12 @@ import Typography from "@mui/joy/Typography";
 import type { ColorPaletteProp } from "@mui/joy/styles";
 import * as React from "react";
 import Actions from "./Actions";
-import AddBudgetItemModal, { type State } from "./AddBudgetItemModal";
+import AddBudgetItemModal, {
+  type State,
+} from "./BudgetItemModal/AddBudgetItemModal";
 import MobileFilters from "./MobileFilters";
 import { useState } from "react";
-import EditBudgetItemModal from "./EditBudgetItemModal";
+import EditBudgetItemModal from "./BudgetItemModal/EditBudgetItemModal";
 
 export default function BudgetTable({
   items,
@@ -33,7 +35,7 @@ export default function BudgetTable({
   const [selected, setSelected] = React.useState<readonly number[]>([]);
 
   return (
-    <React.Fragment>
+    <>
       <MobileFilters />
       <Box>
         <Button
@@ -85,9 +87,8 @@ export default function BudgetTable({
           />
         </FormControl>
       </Box>
-      <Sheet
-        className="OrderTableContainer"
-        variant="outlined"
+
+      <Box
         sx={{
           display: { xs: "none", sm: "initial" },
           width: "100%",
@@ -114,7 +115,11 @@ export default function BudgetTable({
           <thead>
             <tr>
               <th
-                style={{ width: 48, textAlign: "center", padding: "12px 6px" }}
+                style={{
+                  width: 48,
+                  textAlign: "center",
+                  padding: "12px 6px",
+                }}
               >
                 <Checkbox
                   size="sm"
@@ -167,7 +172,11 @@ export default function BudgetTable({
                   <Typography level="body-xs">{row.name}</Typography>
                 </td>
                 <td>
-                  {/* <Typography level="body-xs">{row.occurence}</Typography> */}
+                  {typeof row.occurence !== "undefined" && (
+                    <Chip variant="soft" size="sm" color="neutral">
+                      {row.occurence}
+                    </Chip>
+                  )}
                 </td>
                 <td>
                   <Chip
@@ -209,7 +218,7 @@ export default function BudgetTable({
               </tr>
             ))}
           </tbody>
-          <tfoot>
+          {/* <tfoot>
             <tr>
               <th></th>
               <td></td>
@@ -227,9 +236,9 @@ export default function BudgetTable({
               </td>
               <td></td>
             </tr>
-          </tfoot>
+          </tfoot> */}
         </Table>
-      </Sheet>
-    </React.Fragment>
+      </Box>
+    </>
   );
 }

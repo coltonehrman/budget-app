@@ -17,6 +17,8 @@ import {
   Radio,
 } from "@mui/joy";
 import { type State } from "./AddBudgetItemModal";
+import Select from "@mui/joy/Select";
+import Option from "@mui/joy/Option";
 
 export default function BudgetItemModal({
   title,
@@ -24,6 +26,7 @@ export default function BudgetItemModal({
   state,
   setOpen,
   onNameChange,
+  onOccurenceChange,
   onTypeChange,
   onAmountChange,
   onSubmit,
@@ -33,6 +36,16 @@ export default function BudgetItemModal({
   state: State;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onNameChange: React.ChangeEventHandler<HTMLInputElement>;
+  onOccurenceChange:
+    | ((
+        event:
+          | React.MouseEvent<Element, MouseEvent>
+          | React.KeyboardEvent<Element>
+          | React.FocusEvent<Element, Element>
+          | null,
+        value: State["occurence"] | null,
+      ) => void)
+    | undefined;
   onTypeChange: React.ChangeEventHandler<HTMLInputElement>;
   onAmountChange: React.ChangeEventHandler<HTMLInputElement>;
   onSubmit: () => void;
@@ -45,7 +58,7 @@ export default function BudgetItemModal({
           if (setOpen != null) setOpen(false);
         }}
       >
-        <ModalDialog>
+        <ModalDialog minWidth={550}>
           <ModalClose />
           <Typography level="h4">{title}</Typography>
           <AccordionGroup>
@@ -61,6 +74,26 @@ export default function BudgetItemModal({
                     value={state.name}
                     placeholder="Name"
                   />
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion defaultExpanded>
+              <AccordionSummary>
+                <Typography level="title-sm">Occurance</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box sx={{ my: 2 }}>
+                  <Select
+                    defaultValue={state.occurence}
+                    onChange={onOccurenceChange}
+                  >
+                    <Option value="daily">Daily</Option>
+                    <Option value="weekly">Weekly</Option>
+                    <Option value="bi-weekly">Bi-Weekly</Option>
+                    <Option value="monthly">Monthly</Option>
+                    <Option value="yearly">Yearly</Option>
+                  </Select>
                 </Box>
               </AccordionDetails>
             </Accordion>
