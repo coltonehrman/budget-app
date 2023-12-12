@@ -8,8 +8,10 @@ import Dropdown from "@mui/joy/Dropdown";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 
 export default function Actions({
+  onEdit,
   onDelete,
 }: {
+  onEdit: () => void;
   onDelete: () => void;
 }): JSX.Element {
   return (
@@ -21,9 +23,7 @@ export default function Actions({
         <MoreHorizRoundedIcon />
       </MenuButton>
       <Menu size="sm" sx={{ minWidth: 140 }}>
-        <MenuItem>Edit</MenuItem>
-        <MenuItem>Rename</MenuItem>
-        <MenuItem>Move</MenuItem>
+        <MenuItem onClick={onEdit}>Edit</MenuItem>
         <Divider />
         <MenuItem color="danger" onClick={onDelete}>
           Delete

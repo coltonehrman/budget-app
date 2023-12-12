@@ -1,33 +1,69 @@
-import * as React from "react";
-import type { ColorPaletteProp } from "@mui/joy/styles";
+import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
+import SearchIcon from "@mui/icons-material/Search";
+import { Button } from "@mui/joy";
 import Box from "@mui/joy/Box";
+import Checkbox from "@mui/joy/Checkbox";
 import Chip from "@mui/joy/Chip";
 import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
-import Checkbox from "@mui/joy/Checkbox";
+import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
-import SearchIcon from "@mui/icons-material/Search";
-import Filters from "./Filters";
-import MobileFilters from "./MobileFilters";
+import type { ColorPaletteProp } from "@mui/joy/styles";
+import * as React from "react";
 import Actions from "./Actions";
-import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
-import { type State } from "../AddBudgetSidePane";
+import AddBudgetItemModal, { type State } from "./AddBudgetItemModal";
+import MobileFilters from "./MobileFilters";
+import { useState } from "react";
+import EditBudgetItemModal from "./EditBudgetItemModal";
 
 export default function BudgetTable({
   items,
+  addNewItem,
+  onEditItem,
   onDeleteItem,
 }: {
   items: State[];
+  addNewItem: (item: State) => void;
+  onEditItem: (index: number, item: State) => void;
   onDeleteItem: (itemIndex: number) => void;
 }): JSX.Element {
+  const [addItemOpen, setAddItemOpen] = useState<boolean>(false);
+  const [editItem, setEditItem] = useState<number | null>(null);
   const [selected, setSelected] = React.useState<readonly number[]>([]);
 
   return (
     <React.Fragment>
       <MobileFilters />
+      <Box>
+        <Button
+          size="sm"
+          onClick={() => {
+            setAddItemOpen(!addItemOpen);
+          }}
+        >
+          Add new
+        </Button>
+
+        {editItem != null && (
+          <EditBudgetItemModal
+            open={editItem !== null}
+            onEditItem={(edits) => {
+              onEditItem(editItem, edits);
+            }}
+            itemState={items[editItem]}
+            setOpen={(open) => {
+              if (open === false) setEditItem(null);
+            }}
+          />
+        )}
+
+        <AddBudgetItemModal
+          open={addItemOpen}
+          setOpen={setAddItemOpen}
+          addItem={addNewItem}
+        />
+      </Box>
       <Box
         className="SearchAndFilters-tabletUp"
         sx={{
@@ -42,14 +78,12 @@ export default function BudgetTable({
         }}
       >
         <FormControl sx={{ flex: 1 }} size="sm">
-          <FormLabel>Search by ...</FormLabel>
           <Input
             size="sm"
             placeholder="Search"
             startDecorator={<SearchIcon />}
           />
         </FormControl>
-        <Filters />
       </Box>
       <Sheet
         className="OrderTableContainer"
@@ -163,6 +197,9 @@ export default function BudgetTable({
                 <td>
                   <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                     <Actions
+                      onEdit={() => {
+                        setEditItem(index);
+                      }}
                       onDelete={() => {
                         onDeleteItem(index);
                       }}

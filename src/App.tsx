@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import Link from "@mui/joy/Link";
@@ -7,14 +7,36 @@ import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import Sidebar from "./Sidebar";
 import BudgetTable from "./BudgetTable/BudgetTable";
-import AddBudegtSidePane, { type State } from "./AddBudgetSidePane";
+import { type State } from "./BudgetTable/AddBudgetItemModal";
 
 export default function App(): JSX.Element {
   const [items, setItems] = useState<State[]>([]);
 
+  useEffect(() => {
+    if (items.length === 0) {
+      const storedItems = localStorage.getItem("budget-items");
+
+      if (storedItems !== null) {
+        const parsedStoredItems = JSON.parse(storedItems) as State[];
+        setItems(parsedStoredItems);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("budget-items", JSON.stringify(items));
+  }, [items]);
+
+  const onEditItem = useCallback(
+    (itemIndex: number, edits: State) => {
+      items[itemIndex] = edits;
+      setItems([...items]);
+    },
+    [items, setItems],
+  );
+
   const onDeleteItem = useCallback(
     (itemIndex: number) => {
-      console.log("deleting", itemIndex);
       items.splice(itemIndex, 1);
       setItems([...items]);
     },
@@ -24,11 +46,6 @@ export default function App(): JSX.Element {
   return (
     <Box sx={{ display: "flex", minHeight: "100dvh" }}>
       <Sidebar />
-      <AddBudegtSidePane
-        addNewItem={(newItem) => {
-          setItems([...items, newItem]);
-        }}
-      />
       <Box
         component="main"
         sx={{
@@ -85,7 +102,14 @@ export default function App(): JSX.Element {
             Budget
           </Typography>
         </Box>
-        <BudgetTable onDeleteItem={onDeleteItem} items={items} />
+        <BudgetTable
+          addNewItem={(newItem) => {
+            setItems([...items, newItem]);
+          }}
+          onEditItem={onEditItem}
+          onDeleteItem={onDeleteItem}
+          items={items}
+        />
       </Box>
     </Box>
   );

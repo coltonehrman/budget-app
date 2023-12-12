@@ -8,10 +8,8 @@ import ModalClose from "@mui/joy/ModalClose";
 import Sheet from "@mui/joy/Sheet";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SearchIcon from "@mui/icons-material/Search";
-import Filters from "./Filters";
 
 export default function MobileFilters(): JSX.Element {
   const [open, setOpen] = React.useState(false);
@@ -55,7 +53,6 @@ export default function MobileFilters(): JSX.Element {
           </Typography>
           <Divider sx={{ my: 2 }} />
           <Sheet sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Filters />
             <Button
               color="primary"
               onClick={() => {
