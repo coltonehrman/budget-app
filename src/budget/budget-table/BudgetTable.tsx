@@ -14,10 +14,10 @@ import * as React from "react";
 import Actions from "./Actions";
 import AddBudgetItemModal, {
   type State,
-} from "./BudgetItemModal/AddBudgetItemModal";
+} from "../budget-item-modal/AddBudgetItemModal";
 import MobileFilters from "./MobileFilters";
 import { useState } from "react";
-import EditBudgetItemModal from "./BudgetItemModal/EditBudgetItemModal";
+import EditBudgetItemModal from "../budget-item-modal/EditBudgetItemModal";
 
 export default function BudgetTable({
   items,

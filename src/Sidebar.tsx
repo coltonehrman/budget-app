@@ -1,20 +1,21 @@
-import * as React from "react";
-import GlobalStyles from "@mui/joy/GlobalStyles";
+import { AttachMoneyOutlined, MoneyOutlined } from "@mui/icons-material";
+import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import Box from "@mui/joy/Box";
 import Divider from "@mui/joy/Divider";
+import GlobalStyles from "@mui/joy/GlobalStyles";
 import IconButton from "@mui/joy/IconButton";
 import Input from "@mui/joy/Input";
 import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 import ListItemContent from "@mui/joy/ListItemContent";
-import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
-import { AttachMoneyOutlined, MoneyOutlined } from "@mui/icons-material";
+import Typography from "@mui/joy/Typography";
+import * as React from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Sidebar(): JSX.Element {
   return (
@@ -119,10 +120,23 @@ export default function Sidebar(): JSX.Element {
           </ListItem>
 
           <ListItem>
-            <ListItemButton selected>
+            <ListItemButton selected={false}>
               <AttachMoneyOutlined />
               <ListItemContent>
-                <Typography level="title-sm">Budget</Typography>
+                <RouterLink to="/assets">
+                  <Typography level="title-sm">Assets</Typography>
+                </RouterLink>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem>
+            <ListItemButton>
+              <AttachMoneyOutlined />
+              <ListItemContent>
+                <RouterLink to="/budget">
+                  <Typography level="title-sm">Budget</Typography>
+                </RouterLink>
               </ListItemContent>
             </ListItemButton>
           </ListItem>

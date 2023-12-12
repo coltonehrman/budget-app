@@ -5,15 +5,25 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 
 import "@fontsource/inter";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 const node = (document.getElementById("root") ?? document.body) as Element;
 
 ReactDOM.createRoot(node).render(
-  <CssVarsProvider>
-    {/* must be used under CssVarsProvider */}
-    <CssBaseline />
-    <App />
+  <RouterProvider
+    router={createBrowserRouter([
+      {
+        path: "*",
+        element: (
+          <CssVarsProvider>
+            {/* must be used under CssVarsProvider */}
+            <CssBaseline />
+            <App />
 
-    {/* The rest of your application */}
-  </CssVarsProvider>,
+            {/* The rest of your application */}
+          </CssVarsProvider>
+        ),
+      },
+    ])}
+  />,
 );
