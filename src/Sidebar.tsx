@@ -3,6 +3,8 @@ import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import WalletIcon from "@mui/icons-material/Wallet";
 import Box from "@mui/joy/Box";
 import Divider from "@mui/joy/Divider";
 import GlobalStyles from "@mui/joy/GlobalStyles";
@@ -15,9 +17,41 @@ import ListItemContent from "@mui/joy/ListItemContent";
 import Sheet from "@mui/joy/Sheet";
 import Typography from "@mui/joy/Typography";
 import * as React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import Chip from "@mui/joy/Chip";
+import { useEffect, useState } from "react";
+import { type Account } from "./accounts/AccountsDashboard";
+import { type Asset } from "./assets/AssetDashboard";
+import { type State } from "./budget/budget-item-modal/AddBudgetItemModal";
 
 export default function Sidebar(): JSX.Element {
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [budget, setBudget] = useState<State[]>([]);
+
+  useEffect(() => {
+    const storedAccounts = localStorage.getItem("accounts");
+    const storedAssets = localStorage.getItem("assets");
+    const storedBudget = localStorage.getItem("budget-items");
+
+    if (storedAccounts !== null) {
+      const parsed = JSON.parse(storedAccounts) as Account[];
+      setAccounts(parsed);
+    }
+
+    if (storedAssets !== null) {
+      const parsed = JSON.parse(storedAssets) as Asset[];
+      setAssets(parsed);
+    }
+
+    if (storedBudget !== null) {
+      const parsed = JSON.parse(storedBudget) as State[];
+      setBudget(parsed);
+    }
+  }, []);
+
+  const { pathname } = useLocation();
+
   return (
     <Sheet
       className="Sidebar"
@@ -120,22 +154,42 @@ export default function Sidebar(): JSX.Element {
           </ListItem>
 
           <ListItem>
-            <ListItemButton selected={false}>
-              <AttachMoneyOutlined />
+            <ListItemButton selected={pathname === "/accounts"}>
+              <WalletIcon />
               <ListItemContent>
-                <RouterLink to="/assets">
-                  <Typography level="title-sm">Assets</Typography>
+                <RouterLink to="/accounts" style={{ textDecoration: "none" }}>
+                  <Box display="flex" gap={1}>
+                    <Typography level="title-sm">Accounts</Typography>
+                    <Chip size="sm">{accounts.length}</Chip>
+                  </Box>
                 </RouterLink>
               </ListItemContent>
             </ListItemButton>
           </ListItem>
 
           <ListItem>
-            <ListItemButton>
+            <ListItemButton selected={pathname === "/assets"}>
+              <AccountBalanceIcon />
+              <ListItemContent>
+                <RouterLink to="/assets" style={{ textDecoration: "none" }}>
+                  <Box display="flex" gap={1}>
+                    <Typography level="title-sm">Assets</Typography>
+                    <Chip size="sm">{assets.length}</Chip>
+                  </Box>
+                </RouterLink>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem>
+            <ListItemButton selected={pathname === "/budget"}>
               <AttachMoneyOutlined />
               <ListItemContent>
-                <RouterLink to="/budget">
-                  <Typography level="title-sm">Budget</Typography>
+                <RouterLink to="/budget" style={{ textDecoration: "none" }}>
+                  <Box display="flex" gap={1}>
+                    <Typography level="title-sm">Budget</Typography>
+                    <Chip size="sm">{budget.length}</Chip>
+                  </Box>
                 </RouterLink>
               </ListItemContent>
             </ListItemButton>

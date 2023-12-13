@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import BudgetDashboard from "./budget/BudgetDashboard";
 import Sidebar from "./Sidebar";
 import AssetDashboard from "./assets/AssetDashboard";
+import AccountDashboard from "./accounts/AccountsDashboard";
 
 export default function App(): JSX.Element {
   return (
@@ -30,6 +31,7 @@ export default function App(): JSX.Element {
         <Routes>
           <Route path="/budget" element={<BudgetDashboard />} />
           <Route path="/assets" element={<AssetDashboard />} />
+          <Route path="/accounts" element={<AccountDashboard />} />
         </Routes>
       </Box>
     </Box>
