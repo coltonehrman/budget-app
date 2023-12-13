@@ -2,23 +2,23 @@ import {
   AccountBalance,
   CreditCard,
   DeleteForeverRounded,
+  Savings,
+  ShowChart,
 } from "@mui/icons-material";
-import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import { Divider } from "@mui/joy";
 import Box from "@mui/joy/Box";
-import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import Button from "@mui/joy/Button";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import IconButton from "@mui/joy/IconButton";
-import Link from "@mui/joy/Link";
 import Typography from "@mui/joy/Typography";
 import React, { useCallback, useEffect, useState } from "react";
+import AccountDashboardBreadcrumbs from "./AccountDashboardBreadcrumbs";
 import AccountModal from "./accounts-modal/AccountModal";
 
 export interface Account {
   name: string;
-  type: string;
+  type: "checking" | "credit" | "savings" | "investment";
   balance: number;
   link: string;
 }
@@ -52,29 +52,8 @@ export default function AccountDashboard(): JSX.Element {
 
   return (
     <>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Breadcrumbs
-          size="sm"
-          aria-label="breadcrumbs"
-          separator={<ChevronRightRoundedIcon fontSize="small" />}
-          sx={{ pl: 0 }}
-        >
-          <Link underline="none" color="neutral" aria-label="Home">
-            <HomeRoundedIcon />
-          </Link>
-          <Link
-            underline="hover"
-            color="neutral"
-            fontSize={12}
-            fontWeight={500}
-          >
-            Dashboard
-          </Link>
-          <Typography color="primary" fontWeight={500} fontSize={12}>
-            Accounts
-          </Typography>
-        </Breadcrumbs>
-      </Box>
+      <AccountDashboardBreadcrumbs />
+
       <Typography level="h2" component="h1">
         Accounts
       </Typography>
@@ -109,6 +88,60 @@ export default function AccountDashboard(): JSX.Element {
           gap: 2,
         }}
       >
+        <Box>
+          <Card variant="soft" color="success" invertedColors>
+            <CardContent>
+              <Box>
+                <AccountBalance />
+              </Box>
+
+              <Typography level="body-md">Networth</Typography>
+              <Typography level="h2">
+                ${" "}
+                {new Intl.NumberFormat().format(
+                  accounts.reduce((net, acc) => {
+                    if (acc.type === "credit") return net - acc.balance;
+                    return net + acc.balance;
+                  }, 0),
+                )}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+
+        <Box>
+          <Card variant="soft" color="danger" invertedColors>
+            <CardContent>
+              <Box>
+                <AccountBalance />
+              </Box>
+
+              <Typography level="body-md">Debt</Typography>
+              <Typography level="h2">
+                ${" "}
+                {new Intl.NumberFormat().format(
+                  -accounts.reduce((net, acc) => {
+                    if (acc.type === "credit") return net + acc.balance;
+                    return net;
+                  }, 0),
+                )}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+
+      <Divider sx={{ my: 1 }} />
+
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
+          gap: 2,
+        }}
+      >
         {accounts.map((account, i) => (
           <Box key={i}>
             <Card variant="soft" color="primary" invertedColors>
@@ -116,6 +149,9 @@ export default function AccountDashboard(): JSX.Element {
                 <Box display="flex" justifyContent="space-between">
                   {account.type === "checking" && <AccountBalance />}
                   {account.type === "credit" && <CreditCard />}
+                  {account.type === "savings" && <Savings />}
+                  {account.type === "investment" && <ShowChart />}
+
                   <IconButton
                     variant="soft"
                     color="danger"
@@ -129,8 +165,16 @@ export default function AccountDashboard(): JSX.Element {
                 </Box>
 
                 <Typography level="body-md">{account.name}</Typography>
-                <Typography level="h2">$ {account.balance}</Typography>
-                <Typography level="h4">{account.link}</Typography>
+                <Typography level="h2">
+                  $ {new Intl.NumberFormat().format(account.balance)}
+                </Typography>
+                {Boolean(account.link) && (
+                  <Typography level="h4">
+                    <a href={account.link} target="_blank" rel="noreferrer">
+                      Link
+                    </a>
+                  </Typography>
+                )}
               </CardContent>
             </Card>
           </Box>

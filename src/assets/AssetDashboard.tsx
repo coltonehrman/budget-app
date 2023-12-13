@@ -1,4 +1,9 @@
-import { DeleteForeverRounded, House, MoneyRounded } from "@mui/icons-material";
+import {
+  AccountBalance,
+  DeleteForeverRounded,
+  House,
+  MoneyRounded,
+} from "@mui/icons-material";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import Box from "@mui/joy/Box";
@@ -7,6 +12,7 @@ import Button from "@mui/joy/Button";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import CircularProgress from "@mui/joy/CircularProgress";
+import Divider from "@mui/joy/Divider";
 import IconButton from "@mui/joy/IconButton";
 import Link from "@mui/joy/Link";
 import SvgIcon from "@mui/joy/SvgIcon";
@@ -107,9 +113,62 @@ export default function AssetDashboard(): JSX.Element {
           gap: 2,
         }}
       >
+        <Box>
+          <Card variant="soft" color="success" invertedColors>
+            <CardContent>
+              <Box>
+                <AccountBalance />
+              </Box>
+
+              <Typography level="body-md">Networth</Typography>
+              <Typography level="h2">
+                ${" "}
+                {new Intl.NumberFormat().format(
+                  assets.reduce((net, ass) => net + ass.value, 0) -
+                    assets.reduce((net, ass) => net + ass.debt, 0),
+                )}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+
+        <Box>
+          <Card variant="soft" color="danger" invertedColors>
+            <CardContent>
+              <Box>
+                <AccountBalance />
+              </Box>
+
+              <Typography level="body-md">Debt</Typography>
+              <Typography level="h2">
+                ${" "}
+                {new Intl.NumberFormat().format(
+                  -assets.reduce((net, ass) => net + ass.debt, 0),
+                )}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+
+      <Divider sx={{ my: 1 }} />
+
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
+          gap: 2,
+        }}
+      >
         {assets.map((asset, i) => (
           <Box key={i}>
-            <Card variant="soft" color="success" invertedColors>
+            <Card
+              variant="soft"
+              color={asset.type === "car" ? "warning" : "primary"}
+              invertedColors
+            >
               <CardContent orientation="horizontal">
                 <CircularProgress
                   size="lg"
@@ -137,8 +196,12 @@ export default function AssetDashboard(): JSX.Element {
                   </IconButton>
                   {asset.type === "house" && <House />}
                   <Typography level="body-md">{asset.name}</Typography>
-                  <Typography level="h2">$ {asset.value}</Typography>
-                  <Typography level="h4">$ -{asset.debt}</Typography>
+                  <Typography level="h2">
+                    $ {new Intl.NumberFormat().format(asset.value)}
+                  </Typography>
+                  <Typography level="h4">
+                    $ -{new Intl.NumberFormat().format(asset.debt)}
+                  </Typography>
                 </CardContent>
               </CardContent>
             </Card>

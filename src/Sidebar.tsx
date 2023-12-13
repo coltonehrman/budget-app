@@ -1,11 +1,10 @@
 import { AttachMoneyOutlined, MoneyOutlined } from "@mui/icons-material";
-import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import WalletIcon from "@mui/icons-material/Wallet";
 import Box from "@mui/joy/Box";
+import Chip from "@mui/joy/Chip";
 import Divider from "@mui/joy/Divider";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import IconButton from "@mui/joy/IconButton";
@@ -16,10 +15,8 @@ import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 import ListItemContent from "@mui/joy/ListItemContent";
 import Sheet from "@mui/joy/Sheet";
 import Typography from "@mui/joy/Typography";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import Chip from "@mui/joy/Chip";
-import { useEffect, useState } from "react";
 import { type Account } from "./accounts/AccountsDashboard";
 import { type Asset } from "./assets/AssetDashboard";
 import { type State } from "./budget/budget-item-modal/AddBudgetItemModal";
@@ -135,24 +132,6 @@ export default function Sidebar(): JSX.Element {
             "--ListItem-radius": (theme) => theme.vars.radius.sm,
           }}
         >
-          <ListItem>
-            <ListItemButton>
-              <HomeRoundedIcon />
-              <ListItemContent>
-                <Typography level="title-sm">Home</Typography>
-              </ListItemContent>
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem>
-            <ListItemButton>
-              <DashboardRoundedIcon />
-              <ListItemContent>
-                <Typography level="title-sm">Dashboard</Typography>
-              </ListItemContent>
-            </ListItemButton>
-          </ListItem>
-
           <ListItem>
             <ListItemButton selected={pathname === "/accounts"}>
               <WalletIcon />

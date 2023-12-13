@@ -89,7 +89,9 @@ export default function AccountModal({
                     }}
                   >
                     <Option value="checking">Checking</Option>
+                    <Option value="savings">Savings</Option>
                     <Option value="credit">Credit</Option>
+                    <Option value="investment">Investment</Option>
                   </Select>
                 </Box>
               </AccordionDetails>
@@ -125,7 +127,12 @@ export default function AccountModal({
                 <Box sx={{ my: 2 }}>
                   <Input
                     value={state.link}
-                    onChange={(e) => {}}
+                    onChange={(e) => {
+                      setState({
+                        ...state,
+                        link: e.target.value,
+                      });
+                    }}
                     placeholder="https://example.com"
                   />
                 </Box>
