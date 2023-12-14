@@ -16,7 +16,7 @@ import {
 } from "@mui/joy";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import { type Account } from "../AccountsDashboard";
+import { type Account } from "../account";
 
 const DEFAULT_STATE: Account = {
   name: "",
@@ -106,11 +106,11 @@ export default function AccountModal({
                   <Input
                     value={state.balance}
                     onChange={(e) => {
-                      const newValue = Number(e.target.value);
+                      const newValue = e.target.value;
 
                       setState({
                         ...state,
-                        balance: Number.isNaN(newValue) ? 0 : newValue,
+                        balance: Number.isNaN(Number(newValue)) ? 0 : newValue,
                       });
                     }}
                     placeholder="$ 0"
@@ -146,7 +146,10 @@ export default function AccountModal({
             <Button
               color="primary"
               onClick={() => {
-                onSubmit(state);
+                onSubmit({
+                  ...state,
+                  balance: parseFloat(state.balance),
+                });
                 setState(DEFAULT_STATE);
               }}
             >

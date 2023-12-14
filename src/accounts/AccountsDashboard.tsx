@@ -2,10 +2,11 @@ import {
   AccountBalance,
   CreditCard,
   DeleteForeverRounded,
+  Edit,
   Savings,
   ShowChart,
 } from "@mui/icons-material";
-import { Divider } from "@mui/joy";
+import { type ColorPaletteProp, Divider } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Card from "@mui/joy/Card";
@@ -15,37 +16,36 @@ import Typography from "@mui/joy/Typography";
 import React, { useCallback, useEffect, useState } from "react";
 import AccountDashboardBreadcrumbs from "./AccountDashboardBreadcrumbs";
 import AccountModal from "./accounts-modal/AccountModal";
-
-export interface Account {
-  name: string;
-  type: "checking" | "credit" | "savings" | "investment";
-  balance: number;
-  link: string;
-}
+import {
+  type Account,
+  accountsLoader,
+  deleteAccount,
+  editAccount,
+} from "./account";
 
 export default function AccountDashboard(): JSX.Element {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [editItem, setEditItem] = useState<number | null>(null);
 
   useEffect(() => {
-    if (accounts.length === 0) {
-      const storedItems = localStorage.getItem("accounts");
-
-      if (storedItems !== null) {
-        const parsedStoredItems = JSON.parse(storedItems) as Account[];
-        setAccounts(parsedStoredItems);
-      }
-    }
+    setAccounts(accountsLoader.load(accounts));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("accounts", JSON.stringify(accounts));
+    accountsLoader.save(accounts);
   }, [accounts]);
+
+  const onEditItem = useCallback(
+    (index: number, editedAccount: Account) => {
+      setAccounts(editAccount(accounts, index, editedAccount));
+    },
+    [accounts, setAccounts],
+  );
 
   const onDeleteAccount = useCallback(
     (index: number) => {
-      accounts.splice(index, 1);
-      setAccounts([...accounts]);
+      setAccounts(deleteAccount(accounts, index));
     },
     [accounts, setAccounts],
   );
@@ -68,6 +68,21 @@ export default function AccountDashboard(): JSX.Element {
           Add new
         </Button>
       </Box>
+
+      {editItem != null && (
+        <AccountModal
+          title="Edit Account"
+          open={editItem !== null}
+          initialState={accounts[editItem]}
+          setOpen={(open) => {
+            if (open === false) setEditItem(null);
+          }}
+          onSubmit={(edits) => {
+            onEditItem(editItem, edits);
+            setEditItem(null);
+          }}
+        />
+      )}
 
       <AccountModal
         title="Add Account"
@@ -142,43 +157,65 @@ export default function AccountDashboard(): JSX.Element {
           gap: 2,
         }}
       >
-        {accounts.map((account, i) => (
-          <Box key={i}>
-            <Card variant="soft" color="primary" invertedColors>
-              <CardContent>
-                <Box display="flex" justifyContent="space-between">
-                  {account.type === "checking" && <AccountBalance />}
-                  {account.type === "credit" && <CreditCard />}
-                  {account.type === "savings" && <Savings />}
-                  {account.type === "investment" && <ShowChart />}
+        {accounts.map((account, i) => {
+          let color: ColorPaletteProp = "neutral";
+          if (account.type === "credit") color = "warning";
+          if (account.type === "investment") color = "primary";
 
-                  <IconButton
-                    variant="soft"
-                    color="danger"
-                    size="sm"
-                    onClick={() => {
-                      onDeleteAccount(i);
-                    }}
-                  >
-                    <DeleteForeverRounded />
-                  </IconButton>
-                </Box>
+          return (
+            <Box key={i}>
+              <Card variant="soft" color={color} invertedColors>
+                <CardContent>
+                  <Box display="flex" justifyContent="space-between">
+                    {account.type === "checking" && <AccountBalance />}
+                    {account.type === "credit" && <CreditCard />}
+                    {account.type === "savings" && <Savings />}
+                    {account.type === "investment" && <ShowChart />}
 
-                <Typography level="body-md">{account.name}</Typography>
-                <Typography level="h2">
-                  $ {new Intl.NumberFormat().format(account.balance)}
-                </Typography>
-                {Boolean(account.link) && (
-                  <Typography level="h4">
-                    <a href={account.link} target="_blank" rel="noreferrer">
-                      Link
-                    </a>
+                    <Box>
+                      <IconButton
+                        sx={{
+                          marginRight: 1,
+                        }}
+                        variant="soft"
+                        color="danger"
+                        size="sm"
+                        onClick={() => {
+                          setEditItem(i);
+                        }}
+                      >
+                        <Edit />
+                      </IconButton>
+
+                      <IconButton
+                        variant="soft"
+                        color="danger"
+                        size="sm"
+                        onClick={() => {
+                          onDeleteAccount(i);
+                        }}
+                      >
+                        <DeleteForeverRounded />
+                      </IconButton>
+                    </Box>
+                  </Box>
+
+                  <Typography level="body-md">{account.name}</Typography>
+                  <Typography level="h2">
+                    $ {new Intl.NumberFormat().format(account.balance)}
                   </Typography>
-                )}
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
+                  {Boolean(account.link) && (
+                    <Typography level="h4">
+                      <a href={account.link} target="_blank" rel="noreferrer">
+                        Link
+                      </a>
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Box>
+          );
+        })}
       </Box>
     </>
   );
