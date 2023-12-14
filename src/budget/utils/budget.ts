@@ -41,9 +41,9 @@ export const convertToMonthly = (item: State): number => {
     case "bi-weekly":
       return Number((item.amount * 26) / 12);
     case "daily":
-      return Number((item.amount * 52) / 12);
+      return Number((item.amount * 365) / 12);
     case "weekly":
-      return Number((item.amount * 12) / 12);
+      return Number((item.amount * 52) / 12);
     case "yearly":
       return Number(item.amount / 12);
     default:
