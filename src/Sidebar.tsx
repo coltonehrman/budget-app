@@ -147,6 +147,20 @@ export default function Sidebar(): JSX.Element {
           </ListItem>
 
           <ListItem>
+            <ListItemButton selected={pathname === "/loans"}>
+              <WalletIcon />
+              <ListItemContent>
+                <RouterLink to="/loans" style={{ textDecoration: "none" }}>
+                  <Box display="flex" gap={1}>
+                    <Typography level="title-sm">Loans</Typography>
+                    <Chip size="sm">{0}</Chip>
+                  </Box>
+                </RouterLink>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem>
             <ListItemButton selected={pathname === "/assets"}>
               <AccountBalanceIcon />
               <ListItemContent>

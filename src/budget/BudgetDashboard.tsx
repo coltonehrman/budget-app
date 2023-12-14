@@ -1,15 +1,12 @@
 import { AccountBalance } from "@mui/icons-material";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/joy/Box";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import Button from "@mui/joy/Button";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import Divider from "@mui/joy/Divider";
-import FormControl from "@mui/joy/FormControl";
-import Input from "@mui/joy/Input";
 import Link from "@mui/joy/Link";
 import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
@@ -17,6 +14,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import AddBudgetItemModal, {
   type State,
 } from "./budget-item-modal/AddBudgetItemModal";
+import EditBudgetItemModal from "./budget-item-modal/EditBudgetItemModal";
 import BudgetTable from "./budget-table/BudgetTable";
 import {
   convertToDaily,
@@ -24,7 +22,6 @@ import {
   convertToWeekly,
   convertToYearly,
 } from "./utils/budget";
-import EditBudgetItemModal from "./budget-item-modal/EditBudgetItemModal";
 
 export default function BudgetDashboard(): JSX.Element {
   const [items, setItems] = useState<State[]>([]);
@@ -141,17 +138,6 @@ export default function BudgetDashboard(): JSX.Element {
             setItems([...items, newItem]);
           }}
         />
-      </Box>
-
-      <Box>
-        <FormControl size="sm">
-          <Input
-            fullWidth
-            size="sm"
-            placeholder="Search"
-            startDecorator={<SearchIcon />}
-          />
-        </FormControl>
       </Box>
 
       <Box
