@@ -1,4 +1,4 @@
-import { AttachMoneyOutlined, MoneyOutlined } from "@mui/icons-material";
+import { AttachMoneyOutlined, Home, MoneyOutlined } from "@mui/icons-material";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
@@ -132,6 +132,19 @@ export default function Sidebar(): JSX.Element {
             "--ListItem-radius": (theme) => theme.vars.radius.sm,
           }}
         >
+          <ListItem>
+            <ListItemButton selected={pathname === "/"}>
+              <Home />
+              <ListItemContent>
+                <RouterLink to="/" style={{ textDecoration: "none" }}>
+                  <Box display="flex" gap={1}>
+                    <Typography level="title-sm">Dashboard</Typography>
+                  </Box>
+                </RouterLink>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+
           <ListItem>
             <ListItemButton selected={pathname === "/accounts"}>
               <WalletIcon />

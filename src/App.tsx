@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import AssetDashboard from "./assets/AssetDashboard";
 import AccountDashboard from "./accounts/AccountsDashboard";
 import LoanDashboard from "./loans/LoanDashboard";
+import MainDashboard from "./dashboard/MainDashboard";
 
 export default function App(): JSX.Element {
   return (
@@ -30,6 +31,7 @@ export default function App(): JSX.Element {
         }}
       >
         <Routes>
+          <Route path="/" element={<MainDashboard />} />
           <Route path="/budget" element={<BudgetDashboard />} />
           <Route path="/assets" element={<AssetDashboard />} />
           <Route path="/accounts" element={<AccountDashboard />} />
