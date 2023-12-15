@@ -16,7 +16,7 @@ import {
 } from "@mui/joy";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import { type Account } from "../account";
+import { type Account } from "./account";
 
 const DEFAULT_STATE: Account = {
   name: "",

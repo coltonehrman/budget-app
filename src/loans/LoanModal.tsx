@@ -1,13 +1,7 @@
 import React, { useCallback, useState } from "react";
 import FormModal from "../common/FormModal";
 import { type Loan } from "./loan";
-
-const formatDate = (date: Date): string =>
-  (date.getMonth() > 8 ? date.getMonth() + 1 : "0" + (date.getMonth() + 1)) +
-  "/" +
-  (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
-  "/" +
-  date.getFullYear();
+import { formatDate } from "../common/date";
 
 export default function LoanModal({
   open,
@@ -37,7 +31,13 @@ export default function LoanModal({
       return;
     }
 
-    onSubmit(loan);
+    onSubmit({
+      ...loan,
+      balance: parseFloat(loan.balance),
+      apy: parseFloat(loan.apy),
+      originalBalance: parseFloat(loan.originalBalance),
+      termInMonths: parseInt(loan.termInMonths),
+    });
   }, [loan, inputDate]);
 
   return (
@@ -74,9 +74,11 @@ export default function LoanModal({
             placeholder: "$ 0",
             value: loan.balance.toString(),
             onChange: (e) => {
+              const newValue = e.target.value;
+
               setLoan({
                 ...loan,
-                balance: Number(e.target.value),
+                balance: Number.isNaN(Number(newValue)) ? 0 : newValue,
               });
             },
           },
@@ -85,9 +87,11 @@ export default function LoanModal({
             placeholder: "$ 0",
             value: loan.originalBalance.toString(),
             onChange: (e) => {
+              const newValue = e.target.value;
+
               setLoan({
                 ...loan,
-                originalBalance: Number(e.target.value),
+                originalBalance: Number.isNaN(Number(newValue)) ? 0 : newValue,
               });
             },
           },
@@ -96,9 +100,11 @@ export default function LoanModal({
             placeholder: "0 %",
             value: loan.apy.toString(),
             onChange: (e) => {
+              const newValue = e.target.value;
+
               setLoan({
                 ...loan,
-                apy: Number(e.target.value),
+                apy: Number.isNaN(Number(newValue)) ? 0 : newValue,
               });
             },
           },
@@ -107,9 +113,11 @@ export default function LoanModal({
             placeholder: "12 Months",
             value: loan.termInMonths.toString(),
             onChange: (e) => {
+              const newValue = e.target.value;
+
               setLoan({
                 ...loan,
-                termInMonths: Number(e.target.value),
+                termInMonths: Number.isNaN(Number(newValue)) ? 0 : newValue,
               });
             },
           },

@@ -15,13 +15,14 @@ import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import React, { useCallback, useEffect, useState } from "react";
 import AccountDashboardBreadcrumbs from "./AccountDashboardBreadcrumbs";
-import AccountModal from "./accounts-modal/AccountModal";
+import AccountModal from "./AccountModal";
 import {
   type Account,
   accountsLoader,
   deleteAccount,
   editAccount,
 } from "./account";
+import AccountTiles from "./AccountTils";
 
 export default function AccountDashboard(): JSX.Element {
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -148,74 +149,74 @@ export default function AccountDashboard(): JSX.Element {
 
       <Divider sx={{ my: 1 }} />
 
-      <Box
-        sx={{
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
-          gap: 2,
-        }}
-      >
-        {accounts.map((account, i) => {
-          let color: ColorPaletteProp = "neutral";
-          if (account.type === "credit") color = "warning";
-          if (account.type === "investment") color = "primary";
+      <Box sx={{ paddingBottom: 4 }}>
+        <Typography
+          level="h3"
+          component="h2"
+          sx={{ marginTop: 2, marginBottom: 2 }}
+        >
+          Checking
+        </Typography>
 
-          return (
-            <Box key={i}>
-              <Card variant="soft" color={color} invertedColors>
-                <CardContent>
-                  <Box display="flex" justifyContent="space-between">
-                    {account.type === "checking" && <AccountBalance />}
-                    {account.type === "credit" && <CreditCard />}
-                    {account.type === "savings" && <Savings />}
-                    {account.type === "investment" && <ShowChart />}
+        <Box>
+          <AccountTiles
+            accounts={accounts}
+            type="checking"
+            onDeleteAccount={onDeleteAccount}
+            setEditItem={setEditItem}
+          />
+        </Box>
 
-                    <Box>
-                      <IconButton
-                        sx={{
-                          marginRight: 1,
-                        }}
-                        variant="soft"
-                        color="danger"
-                        size="sm"
-                        onClick={() => {
-                          setEditItem(i);
-                        }}
-                      >
-                        <Edit />
-                      </IconButton>
+        <Typography
+          level="h3"
+          component="h2"
+          sx={{ marginTop: 4, marginBottom: 2 }}
+        >
+          Savings
+        </Typography>
 
-                      <IconButton
-                        variant="soft"
-                        color="danger"
-                        size="sm"
-                        onClick={() => {
-                          onDeleteAccount(i);
-                        }}
-                      >
-                        <DeleteForeverRounded />
-                      </IconButton>
-                    </Box>
-                  </Box>
+        <Box>
+          <AccountTiles
+            accounts={accounts}
+            type="savings"
+            onDeleteAccount={onDeleteAccount}
+            setEditItem={setEditItem}
+          />
+        </Box>
 
-                  <Typography level="body-md">{account.name}</Typography>
-                  <Typography level="h2">
-                    $ {new Intl.NumberFormat().format(account.balance)}
-                  </Typography>
-                  {Boolean(account.link) && (
-                    <Typography level="h4">
-                      <a href={account.link} target="_blank" rel="noreferrer">
-                        Link
-                      </a>
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Box>
-          );
-        })}
+        <Typography
+          level="h3"
+          component="h2"
+          sx={{ marginTop: 4, marginBottom: 2 }}
+        >
+          Credit
+        </Typography>
+
+        <Box>
+          <AccountTiles
+            accounts={accounts}
+            type="credit"
+            onDeleteAccount={onDeleteAccount}
+            setEditItem={setEditItem}
+          />
+        </Box>
+
+        <Typography
+          level="h3"
+          component="h2"
+          sx={{ marginTop: 4, marginBottom: 2 }}
+        >
+          Investments
+        </Typography>
+
+        <Box>
+          <AccountTiles
+            accounts={accounts}
+            type="investment"
+            onDeleteAccount={onDeleteAccount}
+            setEditItem={setEditItem}
+          />
+        </Box>
       </Box>
     </>
   );

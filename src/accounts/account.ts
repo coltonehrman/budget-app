@@ -7,7 +7,7 @@ export interface Account {
   link: string;
 }
 
-export const accountsLoader = { ...loader<Account>("loans") };
+export const accountsLoader = { ...loader<Account>("accounts") };
 
 export const editAccount = (
   accounts: Account[],

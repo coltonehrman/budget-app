@@ -12,7 +12,13 @@ import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import React, { useCallback, useEffect, useState } from "react";
 import LoanModal from "./LoanModal";
-import { type Loan, deleteLoan, loansLoader } from "./loan";
+import {
+  type Loan,
+  deleteLoan,
+  loansLoader,
+  calculateMonthlyPayment,
+} from "./loan";
+import { formatDate } from "../common/date";
 
 export default function LoanDashboard(): JSX.Element {
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -35,8 +41,6 @@ export default function LoanDashboard(): JSX.Element {
 
   return (
     <>
-      {/* <LoanDashboardBreadcrumbs /> */}
-
       <Typography level="h2" component="h1">
         Loans
       </Typography>
@@ -115,34 +119,42 @@ export default function LoanDashboard(): JSX.Element {
           gap: 2,
         }}
       >
-        {loans.map((loan, i) => (
-          <Box key={i}>
-            <Card variant="soft" color="primary" invertedColors>
-              <CardContent>
-                <Box display="flex" justifyContent="space-between">
-                  {loan.type === "house" && <AccountBalance />}
-                  {loan.type === "car" && <CreditCard />}
+        {loans.map((loan, i) => {
+          return (
+            <Box key={i}>
+              <Card variant="soft" color="primary" invertedColors>
+                <CardContent>
+                  <Box display="flex" justifyContent="space-between">
+                    {loan.type === "house" && <AccountBalance />}
+                    {loan.type === "car" && <CreditCard />}
 
-                  <IconButton
-                    variant="soft"
-                    color="danger"
-                    size="sm"
-                    onClick={() => {
-                      onDeleteLoan(i);
-                    }}
-                  >
-                    <DeleteForeverRounded />
-                  </IconButton>
-                </Box>
-
-                <Typography level="body-md">{loan.name}</Typography>
-                <Typography level="h2">
-                  $ {new Intl.NumberFormat().format(loan.balance)}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
+                    <IconButton
+                      variant="soft"
+                      color="danger"
+                      size="sm"
+                      onClick={() => {
+                        onDeleteLoan(i);
+                      }}
+                    >
+                      <DeleteForeverRounded />
+                    </IconButton>
+                  </Box>
+                  <Typography level="body-md">{loan.name}</Typography>
+                  <Typography level="h2">
+                    $ {new Intl.NumberFormat().format(loan.balance)}
+                  </Typography>
+                  {loan.apy}%
+                  <br /> {formatDate(new Date(loan.maturityDate))}
+                  <br /> {loan.termInMonths}
+                  <br />${" "}
+                  {new Intl.NumberFormat().format(
+                    calculateMonthlyPayment(loan),
+                  )}
+                </CardContent>
+              </Card>
+            </Box>
+          );
+        })}
       </Box>
     </>
   );
