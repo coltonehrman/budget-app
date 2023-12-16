@@ -1,13 +1,16 @@
-import { AccountBalance } from "@mui/icons-material";
-import { Divider } from "@mui/joy";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionGroup,
+  AccordionSummary,
+  Divider,
+} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
-import Card from "@mui/joy/Card";
-import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
 import React, { useCallback, useEffect, useState } from "react";
 import AccountDashboardBreadcrumbs from "./AccountDashboardBreadcrumbs";
-import AccountModal from "./AccountModal";
+import AccountModal from "./AccountModal/AccountModal";
 import {
   type Account,
   accountsLoader,
@@ -15,6 +18,8 @@ import {
   editAccount,
 } from "./account";
 import AccountTiles from "./AccountTiles";
+import NetworthCard from "./NetworthCard";
+import DebtCard from "./DebtCard";
 
 export default function AccountDashboard(): JSX.Element {
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -47,20 +52,9 @@ export default function AccountDashboard(): JSX.Element {
     <>
       <AccountDashboardBreadcrumbs />
 
-      <Typography level="h2" component="h1">
+      <Typography level="h3" component="h2">
         Accounts
       </Typography>
-
-      <Box>
-        <Button
-          size="sm"
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
-        >
-          Add new
-        </Button>
-      </Box>
 
       {editItem != null && (
         <AccountModal
@@ -97,118 +91,97 @@ export default function AccountDashboard(): JSX.Element {
         }}
       >
         <Box>
-          <Card variant="soft" color="success" invertedColors>
-            <CardContent>
-              <Box>
-                <AccountBalance />
-              </Box>
-
-              <Typography level="body-md">Networth</Typography>
-              <Typography level="h2">
-                ${" "}
-                {new Intl.NumberFormat().format(
-                  accounts.reduce((net, acc) => {
-                    if (acc.type === "credit") return net - acc.balance;
-                    return net + acc.balance;
-                  }, 0),
-                )}
-              </Typography>
-            </CardContent>
-          </Card>
+          <NetworthCard accounts={accounts} />
         </Box>
 
         <Box>
-          <Card variant="soft" color="danger" invertedColors>
-            <CardContent>
-              <Box>
-                <AccountBalance />
-              </Box>
-
-              <Typography level="body-md">Debt</Typography>
-              <Typography level="h2">
-                ${" "}
-                {new Intl.NumberFormat().format(
-                  -accounts.reduce((net, acc) => {
-                    if (acc.type === "credit") return net + acc.balance;
-                    return net;
-                  }, 0),
-                )}
-              </Typography>
-            </CardContent>
-          </Card>
+          <DebtCard accounts={accounts} />
         </Box>
+      </Box>
+
+      <Box sx={{ marginTop: 1 }}>
+        <Button
+          size="sm"
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          Add New Account
+        </Button>
       </Box>
 
       <Divider sx={{ my: 1 }} />
 
       <Box sx={{ paddingBottom: 4 }}>
-        <Typography
-          level="h3"
-          component="h2"
-          sx={{ marginTop: 2, marginBottom: 2 }}
-        >
-          Checking
-        </Typography>
+        <AccordionGroup>
+          <Accordion defaultExpanded>
+            <AccordionSummary>
+              <Typography level="title-sm">Checking</Typography>
+            </AccordionSummary>
 
-        <Box>
-          <AccountTiles
-            accounts={accounts}
-            type="checking"
-            onDeleteAccount={onDeleteAccount}
-            setEditItem={setEditItem}
-          />
-        </Box>
+            <AccordionDetails>
+              <Box sx={{ my: 2 }}>
+                <AccountTiles
+                  accounts={accounts}
+                  type="checking"
+                  onDeleteAccount={onDeleteAccount}
+                  setEditItem={setEditItem}
+                />
+              </Box>
+            </AccordionDetails>
+          </Accordion>
 
-        <Typography
-          level="h3"
-          component="h2"
-          sx={{ marginTop: 4, marginBottom: 2 }}
-        >
-          Savings
-        </Typography>
+          <Accordion defaultExpanded>
+            <AccordionSummary>
+              <Typography level="title-sm">Savings</Typography>
+            </AccordionSummary>
 
-        <Box>
-          <AccountTiles
-            accounts={accounts}
-            type="savings"
-            onDeleteAccount={onDeleteAccount}
-            setEditItem={setEditItem}
-          />
-        </Box>
+            <AccordionDetails>
+              <Box sx={{ my: 2 }}>
+                <AccountTiles
+                  accounts={accounts}
+                  type="savings"
+                  onDeleteAccount={onDeleteAccount}
+                  setEditItem={setEditItem}
+                />
+              </Box>
+            </AccordionDetails>
+          </Accordion>
 
-        <Typography
-          level="h3"
-          component="h2"
-          sx={{ marginTop: 4, marginBottom: 2 }}
-        >
-          Credit
-        </Typography>
+          <Accordion defaultExpanded>
+            <AccordionSummary>
+              <Typography level="title-sm">Credit</Typography>
+            </AccordionSummary>
 
-        <Box>
-          <AccountTiles
-            accounts={accounts}
-            type="credit"
-            onDeleteAccount={onDeleteAccount}
-            setEditItem={setEditItem}
-          />
-        </Box>
+            <AccordionDetails>
+              <Box sx={{ my: 2 }}>
+                <AccountTiles
+                  accounts={accounts}
+                  type="credit"
+                  onDeleteAccount={onDeleteAccount}
+                  setEditItem={setEditItem}
+                />
+              </Box>
+            </AccordionDetails>
+          </Accordion>
 
-        <Typography
-          level="h3"
-          component="h2"
-          sx={{ marginTop: 4, marginBottom: 2 }}
-        >
-          Investments
-        </Typography>
+          <Accordion defaultExpanded>
+            <AccordionSummary>
+              <Typography level="title-sm">Investments</Typography>
+            </AccordionSummary>
 
-        <Box>
-          <AccountTiles
-            accounts={accounts}
-            type="investment"
-            onDeleteAccount={onDeleteAccount}
-            setEditItem={setEditItem}
-          />
-        </Box>
+            <AccordionDetails>
+              <Box sx={{ my: 2 }}>
+                <AccountTiles
+                  accounts={accounts}
+                  type="investment"
+                  onDeleteAccount={onDeleteAccount}
+                  setEditItem={setEditItem}
+                />
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+        </AccordionGroup>
       </Box>
     </>
   );

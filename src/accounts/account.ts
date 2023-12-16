@@ -2,9 +2,9 @@ import { loader } from "../common/loader";
 
 export interface Account {
   name: string;
-  type: "checking" | "credit" | "savings" | "investment";
+  type: "checking" | "credit" | "savings" | "investment" | null;
   balance: number;
-  link: string;
+  link: string | null;
 }
 
 export const accountsLoader = { ...loader<Account>("accounts") };
