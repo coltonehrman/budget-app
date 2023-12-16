@@ -3,6 +3,15 @@ import FormModal from "../common/FormModal";
 import { type Loan } from "./loan";
 import { formatDate } from "../common/date";
 
+const DEFAULT_STATE: Loan = {
+  name: "",
+  apy: 0,
+  balance: 0,
+  maturityDate: new Date(),
+  originalBalance: 0,
+  type: "house",
+};
+
 export default function LoanModal({
   open,
   setOpen,
@@ -12,15 +21,7 @@ export default function LoanModal({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onSubmit: (loan: Loan) => void;
 }): JSX.Element {
-  const [loan, setLoan] = useState<Loan>({
-    name: "",
-    apy: 0,
-    balance: 0,
-    maturityDate: new Date(),
-    originalBalance: 0,
-    termInMonths: 0,
-    type: "house",
-  });
+  const [loan, setLoan] = useState<Loan>(DEFAULT_STATE);
 
   const [inputDate, setInputDate] = useState(formatDate(loan.maturityDate));
 
@@ -36,8 +37,9 @@ export default function LoanModal({
       balance: parseFloat(loan.balance),
       apy: parseFloat(loan.apy),
       originalBalance: parseFloat(loan.originalBalance),
-      termInMonths: parseInt(loan.termInMonths),
     });
+
+    setLoan(DEFAULT_STATE);
   }, [loan, inputDate]);
 
   return (
@@ -105,19 +107,6 @@ export default function LoanModal({
               setLoan({
                 ...loan,
                 apy: Number.isNaN(Number(newValue)) ? 0 : newValue,
-              });
-            },
-          },
-          {
-            title: "Term in Months",
-            placeholder: "12 Months",
-            value: loan.termInMonths.toString(),
-            onChange: (e) => {
-              const newValue = e.target.value;
-
-              setLoan({
-                ...loan,
-                termInMonths: Number.isNaN(Number(newValue)) ? 0 : newValue,
               });
             },
           },

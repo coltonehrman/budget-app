@@ -6,7 +6,6 @@ export interface Loan {
   balance: number;
   originalBalance: number;
   apy: number;
-  termInMonths: number;
   maturityDate: Date;
 }
 
@@ -22,8 +21,9 @@ export const deleteLoan = (
 };
 
 export const calculateMonthlyPayment = (loan: Loan): number => {
-  const start = new Date();
-  const end = new Date(loan.maturityDate);
+  const start = new Date().valueOf();
+  const end = new Date(loan.maturityDate).valueOf();
+
   const monthsRemaining =
     loan.apy === 3.4 ? 332 : ((end - start) / 1000 / 60 / 60 / 24 / 365) * 12;
 

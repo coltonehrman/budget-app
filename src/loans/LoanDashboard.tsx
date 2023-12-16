@@ -28,13 +28,11 @@ export default function LoanDashboard(): JSX.Element {
     setLoans(loansLoader.load(loans));
   }, []);
 
-  useEffect(() => {
-    loansLoader.save(loans);
-  }, [loans]);
-
   const onDeleteLoan = useCallback(
     (index: number) => {
-      setLoans(deleteLoan(loans, index));
+      const newLoans = deleteLoan(loans, index);
+      setLoans(newLoans);
+      loansLoader.save(newLoans);
     },
     [loans, setLoans],
   );
@@ -61,7 +59,9 @@ export default function LoanDashboard(): JSX.Element {
         setOpen={setIsModalOpen}
         onSubmit={(loan) => {
           setIsModalOpen(false);
-          setLoans([...loans, loan]);
+          const newLoans = [...loans, loan];
+          setLoans(newLoans);
+          loansLoader.save(newLoans);
         }}
       />
 
@@ -74,19 +74,6 @@ export default function LoanDashboard(): JSX.Element {
           gap: 2,
         }}
       >
-        <Box>
-          <Card variant="soft" color="success" invertedColors>
-            <CardContent>
-              <Box>
-                <AccountBalance />
-              </Box>
-
-              <Typography level="body-md">Networth</Typography>
-              <Typography level="h2">$ 0</Typography>
-            </CardContent>
-          </Card>
-        </Box>
-
         <Box>
           <Card variant="soft" color="danger" invertedColors>
             <CardContent>

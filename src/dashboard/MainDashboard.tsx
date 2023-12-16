@@ -50,9 +50,9 @@ export default function MainDashboard(): JSX.Element {
 
     if (storedDailySpending[today] == null) {
       setDidEnterDailyPrompt(false);
-    } else {
-      setDailySpending(storedDailySpending);
     }
+
+    setDailySpending(storedDailySpending);
   }, []);
 
   const getDailyAllowedSpending = (): number => {
@@ -170,10 +170,9 @@ export default function MainDashboard(): JSX.Element {
         renderBlock={(block, activity) => {
           let title = activity.date;
           if (dailySpending[activity.date] != null)
-            title += ` | Spent $${dailySpending[activity.date].reduce(
-              (sum, i) => sum + i,
-              0,
-            )}`;
+            title += ` | Spent $${dailySpending[activity.date]
+              .reduce((sum, i) => sum + i, 0)
+              .toFixed(2)}`;
           return <Tooltip title={title}>{block}</Tooltip>;
         }}
       />

@@ -17,34 +17,28 @@ import Sheet from "@mui/joy/Sheet";
 import Typography from "@mui/joy/Typography";
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { type Account } from "./accounts/AccountsDashboard";
 import { type Asset } from "./assets/AssetDashboard";
-import { type State } from "./budget/budget-item-modal/AddBudgetItemModal";
+import { accountsLoader, type Account } from "./accounts/account";
+import { budgetLoader, type Budget } from "./budget/budget";
+import { loansLoader, type Loan } from "./loans/loan";
 
 export default function Sidebar(): JSX.Element {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [budget, setBudget] = useState<State[]>([]);
+  const [budget, setBudget] = useState<Budget[]>([]);
+  const [loans, setLoans] = useState<Loan[]>([]);
 
   useEffect(() => {
-    const storedAccounts = localStorage.getItem("accounts");
     const storedAssets = localStorage.getItem("assets");
-    const storedBudget = localStorage.getItem("budget-items");
-
-    if (storedAccounts !== null) {
-      const parsed = JSON.parse(storedAccounts) as Account[];
-      setAccounts(parsed);
-    }
 
     if (storedAssets !== null) {
       const parsed = JSON.parse(storedAssets) as Asset[];
       setAssets(parsed);
     }
 
-    if (storedBudget !== null) {
-      const parsed = JSON.parse(storedBudget) as State[];
-      setBudget(parsed);
-    }
+    setAccounts(accountsLoader.load([]));
+    setBudget(budgetLoader.load([]));
+    setLoans(loansLoader.load([]));
   }, []);
 
   const { pathname } = useLocation();
@@ -166,7 +160,7 @@ export default function Sidebar(): JSX.Element {
                 <RouterLink to="/loans" style={{ textDecoration: "none" }}>
                   <Box display="flex" gap={1}>
                     <Typography level="title-sm">Loans</Typography>
-                    <Chip size="sm">{0}</Chip>
+                    <Chip size="sm">{loans.length}</Chip>
                   </Box>
                 </RouterLink>
               </ListItemContent>
