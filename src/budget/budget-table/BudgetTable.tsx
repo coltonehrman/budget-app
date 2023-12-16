@@ -6,15 +6,15 @@ import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
 import type { ColorPaletteProp } from "@mui/joy/styles";
 import * as React from "react";
-import { type State } from "../budget-item-modal/AddBudgetItemModal";
 import Actions from "./Actions";
+import { type Budget } from "../budget";
 
 export default function BudgetTable({
   items,
   onDeleteItem,
   setEditItem,
 }: {
-  items: State[];
+  items: Budget[];
   onDeleteItem: (itemIndex: number) => void;
   setEditItem: React.Dispatch<React.SetStateAction<number | null>>;
 }): JSX.Element {

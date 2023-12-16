@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import BudgetItemModal from "./BudgetItemModal";
+import { type Budget } from "../budget";
 
-export interface State {
-  name: string;
-  occurence?: "daily" | "weekly" | "bi-weekly" | "monthly" | "yearly" | null;
-  type: "expense" | "income";
-  amount: number;
-}
-
-const DEFAULT_STATE: State = {
+const DEFAULT_STATE: Budget = {
   name: "",
   occurence: "monthly",
   type: "expense",
@@ -22,10 +16,10 @@ export default function AddBudgetItemModal({
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  addItem: (item: State) => void;
+  addItem: (item: Budget) => void;
 }): JSX.Element {
   const [{ name, occurence, type, amount }, setState] =
-    useState<State>(DEFAULT_STATE);
+    useState<Budget>(DEFAULT_STATE);
 
   return (
     <BudgetItemModal

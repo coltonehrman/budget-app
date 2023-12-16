@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Divider from "@mui/joy/Divider";
 import IconButton from "@mui/joy/IconButton";
 import Menu from "@mui/joy/Menu";

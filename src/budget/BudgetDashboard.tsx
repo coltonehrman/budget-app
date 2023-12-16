@@ -11,9 +11,7 @@ import Link from "@mui/joy/Link";
 import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
 import React, { useCallback, useEffect, useState } from "react";
-import AddBudgetItemModal, {
-  type State,
-} from "./budget-item-modal/AddBudgetItemModal";
+import AddBudgetItemModal from "./budget-item-modal/AddBudgetItemModal";
 import EditBudgetItemModal from "./budget-item-modal/EditBudgetItemModal";
 import BudgetTable from "./budget-table/BudgetTable";
 import {
@@ -21,61 +19,54 @@ import {
   convertToMonthly,
   convertToWeekly,
   convertToYearly,
+  typeConverter,
 } from "./utils/budget";
+import {
+  type Budget,
+  budgetLoader,
+  editBudgetItem,
+  deleteBudgetItem,
+} from "./budget";
 
 export default function BudgetDashboard(): JSX.Element {
-  const [items, setItems] = useState<State[]>([]);
+  const [items, setItems] = useState<Budget[]>([]);
   const [addItemOpen, setAddItemOpen] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<number | null>(null);
 
   useEffect(() => {
-    if (items.length === 0) {
-      const storedItems = localStorage.getItem("budget-items");
-
-      if (storedItems !== null) {
-        const parsedStoredItems = JSON.parse(storedItems) as State[];
-        setItems(parsedStoredItems);
-      }
-    }
+    setItems(budgetLoader.load(items));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("budget-items", JSON.stringify(items));
+    // budgetLoader.save(items);
   }, [items]);
 
   const onEditItem = useCallback(
-    (itemIndex: number, edits: State) => {
-      items[itemIndex] = edits;
-      setItems([...items]);
+    (index: number, editedItem: Budget) => {
+      const newBudgetItems = editBudgetItem(items, index, editedItem);
+      budgetLoader.save(newBudgetItems);
+      setItems(newBudgetItems);
     },
     [items, setItems],
   );
 
   const onDeleteItem = useCallback(
-    (itemIndex: number) => {
-      items.splice(itemIndex, 1);
-      setItems([...items]);
+    (index: number) => {
+      const newBudgetItems = deleteBudgetItem(items, index);
+      budgetLoader.save(newBudgetItems);
+      setItems(newBudgetItems);
     },
     [items, setItems],
   );
 
-  const typeConverter = useCallback(
-    (type: State["type"], converter: (item: State) => number): string =>
-      items
-        .filter((i) => i.type === type)
-        .reduce((sum, i) => sum + converter(i), 0)
-        .toFixed(2),
-    [items],
-  );
-
-  const dailyIncome = typeConverter("income", convertToDaily);
-  const weeklyIncome = typeConverter("income", convertToWeekly);
-  const monthlyIncome = typeConverter("income", convertToMonthly);
-  const yearlyIncome = typeConverter("income", convertToYearly);
-  const dailyExpenses = typeConverter("expense", convertToDaily);
-  const weeklyExpenses = typeConverter("expense", convertToWeekly);
-  const monthlyExpenses = typeConverter("expense", convertToMonthly);
-  const yearlyExpenses = typeConverter("expense", convertToYearly);
+  const dailyIncome = typeConverter(items, "income", convertToDaily);
+  const weeklyIncome = typeConverter(items, "income", convertToWeekly);
+  const monthlyIncome = typeConverter(items, "income", convertToMonthly);
+  const yearlyIncome = typeConverter(items, "income", convertToYearly);
+  const dailyExpenses = typeConverter(items, "expense", convertToDaily);
+  const weeklyExpenses = typeConverter(items, "expense", convertToWeekly);
+  const monthlyExpenses = typeConverter(items, "expense", convertToMonthly);
+  const yearlyExpenses = typeConverter(items, "expense", convertToYearly);
 
   return (
     <>
@@ -135,7 +126,9 @@ export default function BudgetDashboard(): JSX.Element {
           open={addItemOpen}
           setOpen={setAddItemOpen}
           addItem={(newItem) => {
-            setItems([...items, newItem]);
+            const newBudgetItems = [...items, newItem];
+            budgetLoader.save(newBudgetItems);
+            setItems(newBudgetItems);
           }}
         />
       </Box>

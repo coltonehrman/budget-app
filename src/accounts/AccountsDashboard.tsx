@@ -1,17 +1,9 @@
-import {
-  AccountBalance,
-  CreditCard,
-  DeleteForeverRounded,
-  Edit,
-  Savings,
-  ShowChart,
-} from "@mui/icons-material";
-import { type ColorPaletteProp, Divider } from "@mui/joy";
+import { AccountBalance } from "@mui/icons-material";
+import { Divider } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
-import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import React, { useCallback, useEffect, useState } from "react";
 import AccountDashboardBreadcrumbs from "./AccountDashboardBreadcrumbs";
@@ -22,7 +14,7 @@ import {
   deleteAccount,
   editAccount,
 } from "./account";
-import AccountTiles from "./AccountTils";
+import AccountTiles from "./AccountTiles";
 
 export default function AccountDashboard(): JSX.Element {
   const [accounts, setAccounts] = useState<Account[]>([]);

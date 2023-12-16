@@ -16,9 +16,9 @@ import {
   RadioGroup,
   Radio,
 } from "@mui/joy";
-import { type State } from "./AddBudgetItemModal";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
+import { type Budget } from "../budget";
 
 export default function BudgetItemModal({
   title,
@@ -33,7 +33,7 @@ export default function BudgetItemModal({
 }: {
   title: string;
   open: boolean;
-  state: State;
+  state: Budget;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onNameChange: React.ChangeEventHandler<HTMLInputElement>;
   onOccurenceChange:
@@ -43,7 +43,7 @@ export default function BudgetItemModal({
           | React.KeyboardEvent<Element>
           | React.FocusEvent<Element, Element>
           | null,
-        value: State["occurence"] | null,
+        value: Budget["occurence"] | null,
       ) => void)
     | undefined;
   onTypeChange: React.ChangeEventHandler<HTMLInputElement>;

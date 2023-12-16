@@ -1,6 +1,6 @@
-import { type State } from "../budget-item-modal/AddBudgetItemModal";
+import { type Budget } from "../budget";
 
-export const convertToDaily = (item: State): number => {
+export const convertToDaily = (item: Budget): number => {
   switch (item.occurence) {
     case "daily":
       return Number(item.amount);
@@ -17,7 +17,7 @@ export const convertToDaily = (item: State): number => {
   }
 };
 
-export const convertToWeekly = (item: State): number => {
+export const convertToWeekly = (item: Budget): number => {
   switch (item.occurence) {
     case "weekly":
       return Number(item.amount);
@@ -34,7 +34,7 @@ export const convertToWeekly = (item: State): number => {
   }
 };
 
-export const convertToMonthly = (item: State): number => {
+export const convertToMonthly = (item: Budget): number => {
   switch (item.occurence) {
     case "monthly":
       return Number(item.amount);
@@ -51,7 +51,7 @@ export const convertToMonthly = (item: State): number => {
   }
 };
 
-export const convertToYearly = (item: State): number => {
+export const convertToYearly = (item: Budget): number => {
   switch (item.occurence) {
     case "yearly":
       return Number(item.amount);
@@ -67,3 +67,13 @@ export const convertToYearly = (item: State): number => {
       return 0;
   }
 };
+
+export const typeConverter = (
+  items: Budget[],
+  type: Budget["type"],
+  converter: (item: Budget) => number,
+): string =>
+  items
+    .filter((i) => i.type === type)
+    .reduce((sum, i) => sum + converter(i), 0)
+    .toFixed(2);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { type State } from "./AddBudgetItemModal";
 import BudgetItemModal from "./BudgetItemModal";
+import { type Budget } from "../budget";
 
 export default function EditBudgetItemModal({
   open,
@@ -10,11 +10,11 @@ export default function EditBudgetItemModal({
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  itemState: State;
-  onEditItem: (item: State) => void;
+  itemState: Budget;
+  onEditItem: (item: Budget) => void;
 }): JSX.Element {
   const [{ name, occurence, type, amount }, setState] =
-    useState<State>(itemState);
+    useState<Budget>(itemState);
 
   return (
     <BudgetItemModal
