@@ -81,9 +81,23 @@ export default function AccountTiles({
 
                 <Typography level="body-md">{account.name}</Typography>
                 <Typography level="h2">
-                  $ {new Intl.NumberFormat().format(account.balance)}
+                  ${" "}
+                  {new Intl.NumberFormat().format(
+                    account.balances[account.balances.length - 1].amount,
+                  )}
                 </Typography>
-                {Boolean(account.link) && (
+
+                {account.balances.length > 1 && (
+                  <Typography level="body-lg">
+                    Last Updated: ${" "}
+                    {new Intl.NumberFormat().format(
+                      account.balances[account.balances.length - 1].amount -
+                        account.balances[account.balances.length - 2].amount,
+                    )}
+                  </Typography>
+                )}
+
+                {account.link !== "" && account.link !== null && (
                   <Typography level="h4">
                     <a href={account.link} target="_blank" rel="noreferrer">
                       Link

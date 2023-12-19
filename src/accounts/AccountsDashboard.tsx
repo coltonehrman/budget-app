@@ -30,20 +30,20 @@ export default function AccountDashboard(): JSX.Element {
     setAccounts(accountsLoader.load(accounts));
   }, []);
 
-  useEffect(() => {
-    accountsLoader.save(accounts);
-  }, [accounts]);
-
   const onEditItem = useCallback(
     (index: number, editedAccount: Account) => {
-      setAccounts(editAccount(accounts, index, editedAccount));
+      const newAccounts = editAccount(accounts, index, editedAccount);
+      setAccounts(newAccounts);
+      accountsLoader.save(newAccounts);
     },
     [accounts, setAccounts],
   );
 
   const onDeleteAccount = useCallback(
     (index: number) => {
-      setAccounts(deleteAccount(accounts, index));
+      const newAccounts = deleteAccount(accounts, index);
+      setAccounts(newAccounts);
+      accountsLoader.save(newAccounts);
     },
     [accounts, setAccounts],
   );
@@ -60,12 +60,27 @@ export default function AccountDashboard(): JSX.Element {
         <AccountModal
           title="Edit Account"
           open={editItem !== null}
-          initialState={accounts[editItem]}
+          initialState={{
+            ...accounts[editItem],
+            balance:
+              accounts[editItem].balances[
+                accounts[editItem].balances.length - 1
+              ].amount,
+          }}
           setOpen={(open) => {
             if (open === false) setEditItem(null);
           }}
           onSubmit={(edits) => {
-            onEditItem(editItem, edits);
+            onEditItem(editItem, {
+              ...edits,
+              balances: [
+                ...accounts[editItem].balances,
+                {
+                  date: new Date(),
+                  amount: edits.balance,
+                },
+              ],
+            });
             setEditItem(null);
           }}
         />
@@ -76,8 +91,25 @@ export default function AccountDashboard(): JSX.Element {
         open={isModalOpen}
         setOpen={setIsModalOpen}
         onSubmit={(asset) => {
-          setAccounts([...accounts, asset]);
+          console.log(asset);
+
+          const newAccounts: Account[] = [
+            ...accounts,
+            {
+              ...asset,
+              balances: [
+                {
+                  date: new Date(),
+                  amount: asset.balance,
+                },
+              ],
+            },
+          ];
+
+          setAccounts(newAccounts);
           setIsModalOpen(false);
+
+          accountsLoader.save(newAccounts);
         }}
       />
 

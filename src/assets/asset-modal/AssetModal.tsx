@@ -16,7 +16,7 @@ import {
 } from "@mui/joy";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import { type Asset } from "../AssetDashboard";
+import { type Asset } from "../asset";
 
 const DEFAULT_STATE: Asset = {
   name: "",

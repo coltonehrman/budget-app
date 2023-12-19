@@ -1,9 +1,14 @@
 import { loader } from "../common/loader";
 
+interface BalanceEntry {
+  date?: Date;
+  amount: number;
+}
+
 export interface Account {
   name: string;
   type: "checking" | "credit" | "savings" | "investment" | null;
-  balance: number;
+  balances: BalanceEntry[];
   link: string | null;
 }
 

@@ -37,10 +37,6 @@ export default function BudgetDashboard(): JSX.Element {
     setItems(budgetLoader.load(items));
   }, []);
 
-  useEffect(() => {
-    // budgetLoader.save(items);
-  }, [items]);
-
   const onEditItem = useCallback(
     (index: number, editedItem: Budget) => {
       const newBudgetItems = editBudgetItem(items, index, editedItem);

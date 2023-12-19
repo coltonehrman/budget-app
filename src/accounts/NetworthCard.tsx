@@ -23,8 +23,9 @@ export default function NetworthCard({
           ${" "}
           {new Intl.NumberFormat().format(
             accounts.reduce((net, acc) => {
-              if (acc.type === "credit") return net - acc.balance;
-              return net + acc.balance;
+              if (acc.type === "credit")
+                return net - acc.balances[acc.balances.length - 1].amount;
+              return net + acc.balances[acc.balances.length - 1].amount;
             }, 0),
           )}
         </Typography>

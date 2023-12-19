@@ -7,11 +7,12 @@ import Link from "@mui/joy/Link";
 import Typography from "@mui/joy/Typography";
 import Calendar, { type Level, type Activity } from "react-activity-calendar";
 import React, { useEffect, useState } from "react";
-import { Button, Tooltip } from "@mui/joy";
+import { Button, Card, CardContent, Tooltip } from "@mui/joy";
 import { eachDayOfInterval, formatISO } from "date-fns";
 import DailyModal from "./DailyModal";
 import { budgetLoader } from "../budget/budget";
 import { convertToDaily, typeConverter } from "../budget/utils/budget";
+import { Money, MoneyOff, Paid } from "@mui/icons-material";
 
 type Done = Record<string, { count: number; level: Level } | undefined>;
 
@@ -67,6 +68,16 @@ export default function MainDashboard(): JSX.Element {
     return parseFloat((dailyIncome - dailyExpenses).toFixed(2));
   };
 
+  const totalSpent = Object.keys(dailySpending).reduce((sum, date) => {
+    const dailyTotal = dailySpending[date].reduce((sum, i) => sum + i, 0);
+    return sum + dailyTotal;
+  }, 0);
+
+  const totalBudget = Object.keys(dailySpending).reduce((sum, date) => {
+    const limit = getDailyAllowedSpending();
+    return sum + limit;
+  }, 0);
+
   return (
     <>
       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -89,13 +100,10 @@ export default function MainDashboard(): JSX.Element {
           </Link>
         </Breadcrumbs>
       </Box>
-
       <Typography level="h2" component="h1">
         Dashboard
       </Typography>
-
       <Divider sx={{ my: 1 }} />
-
       <DailyModal
         open={!didEnterDailyPrompt}
         onSubmit={(amountSpent) => {
@@ -118,7 +126,6 @@ export default function MainDashboard(): JSX.Element {
           setDidEnterDailyPrompt(true);
         }}
       />
-
       <Box>
         <Button
           size="md"
@@ -129,7 +136,6 @@ export default function MainDashboard(): JSX.Element {
           Spend Money
         </Button>
       </Box>
-
       <Calendar
         blockMargin={5}
         blockSize={25}
@@ -176,6 +182,63 @@ export default function MainDashboard(): JSX.Element {
           return <Tooltip title={title}>{block}</Tooltip>;
         }}
       />
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Card
+            variant="soft"
+            color={`${totalBudget - totalSpent > 0 ? "success" : "danger"}`}
+            invertedColors
+          >
+            <CardContent>
+              <Box>
+                <Paid />
+              </Box>
+
+              <Typography level="body-md">Net</Typography>
+              <Typography level="h2">
+                $ {new Intl.NumberFormat().format(totalBudget - totalSpent)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+        <Box>
+          <Card variant="soft" color="primary" invertedColors>
+            <CardContent>
+              <Box>
+                <MoneyOff />
+              </Box>
+
+              <Typography level="body-md">Total Spent</Typography>
+              <Typography level="h2">
+                $ {new Intl.NumberFormat().format(totalSpent)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+
+        <Box>
+          <Card variant="soft" color="primary" invertedColors>
+            <CardContent>
+              <Box>
+                <Money />
+              </Box>
+
+              <Typography level="body-md">Total Budget</Typography>
+              <Typography level="h2">
+                $ {new Intl.NumberFormat().format(totalBudget)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
     </>
   );
 }

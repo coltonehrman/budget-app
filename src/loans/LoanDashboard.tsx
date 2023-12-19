@@ -2,6 +2,7 @@ import {
   AccountBalance,
   CreditCard,
   DeleteForeverRounded,
+  House,
 } from "@mui/icons-material";
 import { Divider } from "@mui/joy";
 import Box from "@mui/joy/Box";
@@ -112,7 +113,7 @@ export default function LoanDashboard(): JSX.Element {
               <Card variant="soft" color="primary" invertedColors>
                 <CardContent>
                   <Box display="flex" justifyContent="space-between">
-                    {loan.type === "house" && <AccountBalance />}
+                    {loan.type === "house" && <House />}
                     {loan.type === "car" && <CreditCard />}
 
                     <IconButton
@@ -132,7 +133,6 @@ export default function LoanDashboard(): JSX.Element {
                   </Typography>
                   {loan.apy}%
                   <br /> {formatDate(new Date(loan.maturityDate))}
-                  <br /> {loan.termInMonths}
                   <br />${" "}
                   {new Intl.NumberFormat().format(
                     calculateMonthlyPayment(loan),

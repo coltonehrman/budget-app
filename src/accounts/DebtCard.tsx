@@ -23,7 +23,8 @@ export default function DebtCard({
           ${" "}
           {new Intl.NumberFormat().format(
             -accounts.reduce((net, acc) => {
-              if (acc.type === "credit") return net + acc.balance;
+              if (acc.type === "credit")
+                return net + acc.balances[acc.balances.length - 1].amount;
               return net;
             }, 0),
           )}

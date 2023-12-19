@@ -19,37 +19,32 @@ import SvgIcon from "@mui/joy/SvgIcon";
 import Typography from "@mui/joy/Typography";
 import React, { useCallback, useEffect, useState } from "react";
 import AssetModal from "./asset-modal/AssetModal";
-
-export interface Asset {
-  name: string;
-  type: string;
-  value: number;
-  debt: number;
-}
+import {
+  assetLoader,
+  type Asset,
+  editAssetItem,
+  deleteAssetItem,
+} from "./asset";
 
 export default function AssetDashboard(): JSX.Element {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [editItem, setEditItem] = useState<number | null>(null);
 
   useEffect(() => {
-    if (assets.length === 0) {
-      const storedItems = localStorage.getItem("assets");
-
-      if (storedItems !== null) {
-        const parsedStoredItems = JSON.parse(storedItems) as Asset[];
-        setAssets(parsedStoredItems);
-      }
-    }
+    setAssets(assetLoader.load(assets));
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("assets", JSON.stringify(assets));
-  }, [assets]);
+  const onEditItem = useCallback(
+    (index: number, editedAsset: Asset) => {
+      setAssets(editAssetItem(assets, index, editedAsset));
+    },
+    [assets, setAssets],
+  );
 
   const onDeleteAsset = useCallback(
     (index: number) => {
-      assets.splice(index, 1);
-      setAssets([...assets]);
+      setAssets(deleteAssetItem(assets, index));
     },
     [assets, setAssets],
   );
