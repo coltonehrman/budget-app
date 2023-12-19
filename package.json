@@ -1,7 +1,7 @@
 {
-  "name": "enterprise-app",
-  "version": "0.0.0",
-  "description": "Example enterprise app with everything you need.",
+  "name": "budget-app",
+  "version": "0.0.1",
+  "description": "Open-source free Budget app.",
   "main": "index.js",
   "type": "module",
   "scripts": {
