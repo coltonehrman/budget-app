@@ -1,6 +1,7 @@
 import {
   AccountBalance,
   DeleteForeverRounded,
+  Edit,
   House,
   MoneyRounded,
 } from "@mui/icons-material";
@@ -37,14 +38,18 @@ export default function AssetDashboard(): JSX.Element {
 
   const onEditItem = useCallback(
     (index: number, editedAsset: Asset) => {
-      setAssets(editAssetItem(assets, index, editedAsset));
+      const newAssets = editAssetItem(assets, index, editedAsset);
+      setAssets(newAssets);
+      assetLoader.save(newAssets);
     },
     [assets, setAssets],
   );
 
   const onDeleteAsset = useCallback(
     (index: number) => {
-      setAssets(deleteAssetItem(assets, index));
+      const newAssets = deleteAssetItem(assets, index);
+      setAssets(newAssets);
+      assetLoader.save(newAssets);
     },
     [assets, setAssets],
   );
@@ -89,13 +94,30 @@ export default function AssetDashboard(): JSX.Element {
         </Button>
       </Box>
 
+      {editItem != null && (
+        <AssetModal
+          title="Edit Account"
+          open={editItem !== null}
+          initialState={assets[editItem]}
+          setOpen={(open) => {
+            if (open === false) setEditItem(null);
+          }}
+          onSubmit={(edits) => {
+            onEditItem(editItem, edits);
+            setEditItem(null);
+          }}
+        />
+      )}
+
       <AssetModal
         title="Add Asset"
         open={isModalOpen}
         setOpen={setIsModalOpen}
         onSubmit={(asset) => {
-          setAssets([...assets, asset]);
+          const newAssets = [...assets, asset];
+          setAssets(newAssets);
           setIsModalOpen(false);
+          assetLoader.save(newAssets);
         }}
       />
 
@@ -178,17 +200,34 @@ export default function AssetDashboard(): JSX.Element {
                   </SvgIcon>
                 </CircularProgress>
                 <CardContent>
-                  <IconButton
-                    variant="soft"
-                    color="danger"
-                    size="sm"
-                    sx={{ ml: "auto" }}
-                    onClick={() => {
-                      onDeleteAsset(i);
-                    }}
-                  >
-                    <DeleteForeverRounded />
-                  </IconButton>
+                  <Box sx={{ ml: "auto" }}>
+                    <IconButton
+                      sx={{
+                        marginRight: 1,
+                      }}
+                      variant="soft"
+                      color="danger"
+                      size="sm"
+                      onClick={() => {
+                        setEditItem(i);
+                      }}
+                    >
+                      <Edit />
+                    </IconButton>
+
+                    <IconButton
+                      variant="soft"
+                      color="danger"
+                      size="sm"
+                      sx={{ ml: "auto" }}
+                      onClick={() => {
+                        onDeleteAsset(i);
+                      }}
+                    >
+                      <DeleteForeverRounded />
+                    </IconButton>
+                  </Box>
+
                   {asset.type === "house" && <House />}
                   <Typography level="body-md">{asset.name}</Typography>
                   <Typography level="h2">

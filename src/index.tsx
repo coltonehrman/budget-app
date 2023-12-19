@@ -8,7 +8,7 @@ import {
 } from "@mui/material/styles";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import App from "./App";
 
 const materialTheme = materialExtendTheme();
@@ -16,12 +16,12 @@ const materialTheme = materialExtendTheme();
 const node = (document.getElementById("root") ?? document.body) as Element;
 
 ReactDOM.createRoot(node).render(
-  <BrowserRouter basename="/budget-app">
+  <HashRouter>
     <MaterialCssVarsProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
       <JoyCssVarsProvider>
         <CssBaseline enableColorScheme />
         <App />
       </JoyCssVarsProvider>
     </MaterialCssVarsProvider>
-  </BrowserRouter>,
+  </HashRouter>,
 );
