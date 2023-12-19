@@ -1,17 +1,44 @@
 import Box from "@mui/joy/Box";
-import React from "react";
+import React, { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import BudgetDashboard from "./budget/BudgetDashboard";
-import Sidebar from "./Sidebar";
+import DesktopSidebar from "./DesktopSidebar";
 import AssetDashboard from "./assets/AssetDashboard";
 import AccountDashboard from "./accounts/AccountsDashboard";
 import LoanDashboard from "./loans/LoanDashboard";
 import MainDashboard from "./dashboard/MainDashboard";
+import MobileSidebar from "./MobileSidebar";
+import { Fab } from "@mui/material";
+import { Menu } from "@mui/icons-material";
 
 export default function App(): JSX.Element {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <Box sx={{ display: "flex", minHeight: "100dvh", overflow: "scroll" }}>
-      <Sidebar />
+      <DesktopSidebar />
+      <MobileSidebar
+        isOpen={isOpen}
+        toggle={() => {
+          setIsOpen(!isOpen);
+        }}
+        close={() => {
+          setIsOpen(false);
+        }}
+      />
+      <Fab
+        sx={{
+          position: "fixed",
+          bottom: 10,
+          right: 10,
+          backgroundColor: "#fff",
+        }}
+        onClick={() => {
+          setIsOpen(!isOpen);
+        }}
+      >
+        <Menu />
+      </Fab>
       <Box
         component="main"
         sx={{
