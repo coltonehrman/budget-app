@@ -34,8 +34,11 @@ export default function LoanModal({
 
     onSubmit({
       ...loan,
+      // @ts-expect-error TODO: fix types for input
       balance: parseFloat(loan.balance),
+      // @ts-expect-error TODO: fix types for input
       apy: parseFloat(loan.apy),
+      // @ts-expect-error TODO: fix types for input
       originalBalance: parseFloat(loan.originalBalance),
     });
 
@@ -80,6 +83,7 @@ export default function LoanModal({
 
               setLoan({
                 ...loan,
+                // @ts-expect-error TODO: fix types for input
                 balance: Number.isNaN(Number(newValue)) ? 0 : newValue,
               });
             },
@@ -93,6 +97,7 @@ export default function LoanModal({
 
               setLoan({
                 ...loan,
+                // @ts-expect-error TODO: fix types for input
                 originalBalance: Number.isNaN(Number(newValue)) ? 0 : newValue,
               });
             },
@@ -106,6 +111,7 @@ export default function LoanModal({
 
               setLoan({
                 ...loan,
+                // @ts-expect-error TODO: fix types for input
                 apy: Number.isNaN(Number(newValue)) ? 0 : newValue,
               });
             },

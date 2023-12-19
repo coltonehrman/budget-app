@@ -17,10 +17,10 @@ import Sheet from "@mui/joy/Sheet";
 import Typography from "@mui/joy/Typography";
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { type Asset } from "./assets/AssetDashboard";
 import { accountsLoader, type Account } from "./accounts/account";
 import { budgetLoader, type Budget } from "./budget/budget";
 import { loansLoader, type Loan } from "./loans/loan";
+import { type Asset } from "./assets/asset";
 
 export default function Sidebar(): JSX.Element {
   const [accounts, setAccounts] = useState<Account[]>([]);
