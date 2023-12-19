@@ -18,7 +18,7 @@ import IconButton from "@mui/joy/IconButton";
 import Link from "@mui/joy/Link";
 import SvgIcon from "@mui/joy/SvgIcon";
 import Typography from "@mui/joy/Typography";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import AssetModal from "./asset-modal/AssetModal";
 import {
   assetLoader,
@@ -26,32 +26,29 @@ import {
   editAssetItem,
   deleteAssetItem,
 } from "./asset";
+import { Store } from "../store";
 
 export default function AssetDashboard(): JSX.Element {
-  const [assets, setAssets] = useState<Asset[]>([]);
+  const { assets, update } = useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<number | null>(null);
-
-  useEffect(() => {
-    setAssets(assetLoader.load(assets));
-  }, []);
 
   const onEditItem = useCallback(
     (index: number, editedAsset: Asset) => {
       const newAssets = editAssetItem(assets, index, editedAsset);
-      setAssets(newAssets);
       assetLoader.save(newAssets);
+      update();
     },
-    [assets, setAssets],
+    [assets],
   );
 
   const onDeleteAsset = useCallback(
     (index: number) => {
       const newAssets = deleteAssetItem(assets, index);
-      setAssets(newAssets);
       assetLoader.save(newAssets);
+      update();
     },
-    [assets, setAssets],
+    [assets],
   );
 
   return (
@@ -115,9 +112,9 @@ export default function AssetDashboard(): JSX.Element {
         setOpen={setIsModalOpen}
         onSubmit={(asset) => {
           const newAssets = [...assets, asset];
-          setAssets(newAssets);
           setIsModalOpen(false);
           assetLoader.save(newAssets);
+          update();
         }}
       />
 
@@ -143,24 +140,6 @@ export default function AssetDashboard(): JSX.Element {
                 {new Intl.NumberFormat().format(
                   assets.reduce((net, ass) => net + ass.value, 0) -
                     assets.reduce((net, ass) => net + ass.debt, 0),
-                )}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-
-        <Box>
-          <Card variant="soft" color="danger" invertedColors>
-            <CardContent>
-              <Box>
-                <AccountBalance />
-              </Box>
-
-              <Typography level="body-md">Debt</Typography>
-              <Typography level="h2">
-                ${" "}
-                {new Intl.NumberFormat().format(
-                  -assets.reduce((net, ass) => net + ass.debt, 0),
                 )}
               </Typography>
             </CardContent>

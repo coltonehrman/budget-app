@@ -11,31 +11,23 @@ import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import LoanModal from "./LoanModal";
-import {
-  type Loan,
-  deleteLoan,
-  loansLoader,
-  calculateMonthlyPayment,
-} from "./loan";
+import { deleteLoan, loansLoader, calculateMonthlyPayment } from "./loan";
 import { formatDate } from "../common/date";
+import { Store } from "../store";
 
 export default function LoanDashboard(): JSX.Element {
-  const [loans, setLoans] = useState<Loan[]>([]);
+  const { loans, update } = useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    setLoans(loansLoader.load(loans));
-  }, []);
 
   const onDeleteLoan = useCallback(
     (index: number) => {
       const newLoans = deleteLoan(loans, index);
-      setLoans(newLoans);
       loansLoader.save(newLoans);
+      update();
     },
-    [loans, setLoans],
+    [loans],
   );
 
   return (
@@ -61,8 +53,8 @@ export default function LoanDashboard(): JSX.Element {
         onSubmit={(loan) => {
           setIsModalOpen(false);
           const newLoans = [...loans, loan];
-          setLoans(newLoans);
           loansLoader.save(newLoans);
+          update();
         }}
       />
 

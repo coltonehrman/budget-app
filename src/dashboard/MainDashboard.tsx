@@ -6,13 +6,13 @@ import Divider from "@mui/joy/Divider";
 import Link from "@mui/joy/Link";
 import Typography from "@mui/joy/Typography";
 import Calendar, { type Level, type Activity } from "react-activity-calendar";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Card, CardContent, Tooltip } from "@mui/joy";
 import { eachDayOfInterval, formatISO } from "date-fns";
 import DailyModal from "./DailyModal";
-import { budgetLoader } from "../budget/budget";
 import { convertToDaily, typeConverter } from "../budget/utils/budget";
-import { Money, MoneyOff, Paid } from "@mui/icons-material";
+import { AccountBalance, Money, MoneyOff, Paid } from "@mui/icons-material";
+import { Store } from "../store";
 
 type Done = Record<string, { count: number; level: Level } | undefined>;
 
@@ -40,6 +40,7 @@ const STORAGE_KEY = "daily-spending";
 type DailySpending = Record<string, number[]>;
 
 export default function MainDashboard(): JSX.Element {
+  const { accounts, assets, loans, budget } = useContext(Store);
   const [dailySpending, setDailySpending] = useState<DailySpending>({});
   const [didEnterDailyPrompt, setDidEnterDailyPrompt] = useState(true);
 
@@ -57,12 +58,11 @@ export default function MainDashboard(): JSX.Element {
   }, []);
 
   const getDailyAllowedSpending = (): number => {
-    const budgetItems = budgetLoader.load([]);
     const dailyIncome = parseFloat(
-      typeConverter(budgetItems, "income", convertToDaily),
+      typeConverter(budget, "income", convertToDaily),
     );
     const dailyExpenses = parseFloat(
-      typeConverter(budgetItems, "expense", convertToDaily),
+      typeConverter(budget, "expense", convertToDaily),
     );
 
     return parseFloat((dailyIncome - dailyExpenses).toFixed(2));
@@ -234,6 +234,66 @@ export default function MainDashboard(): JSX.Element {
               <Typography level="body-md">Total Budget</Typography>
               <Typography level="h2">
                 $ {new Intl.NumberFormat().format(totalBudget)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Card variant="soft" color="success" invertedColors>
+            <CardContent>
+              <Box>
+                <AccountBalance />
+              </Box>
+
+              <Typography level="body-md">Networth</Typography>
+              <Typography level="h2">
+                ${" "}
+                {new Intl.NumberFormat().format(
+                  accounts.reduce((net, acc) => {
+                    if (acc.type === "credit")
+                      return net - acc.balances[acc.balances.length - 1].amount;
+                    return net + acc.balances[acc.balances.length - 1].amount;
+                  }, 0) +
+                    assets.reduce((sum, ass) => {
+                      return sum + ass.value - ass.debt;
+                    }, 0),
+                )}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+
+        <Box>
+          <Card variant="soft" color="danger" invertedColors>
+            <CardContent>
+              <Box>
+                <AccountBalance />
+              </Box>
+
+              <Typography level="body-md">Debt</Typography>
+              <Typography level="h2">
+                $ -
+                {new Intl.NumberFormat().format(
+                  accounts.reduce((sum, acc) => {
+                    if (acc.type === "credit")
+                      return sum + acc.balances[acc.balances.length - 1].amount;
+                    return sum;
+                  }, 0) +
+                    loans.reduce((sum, loan) => {
+                      return sum + loan.balance;
+                    }, 0),
+                )}
               </Typography>
             </CardContent>
           </Card>

@@ -8,33 +8,13 @@ import ListItem from "@mui/joy/ListItem";
 import ListItemButton from "@mui/joy/ListItemButton";
 import ListItemContent from "@mui/joy/ListItemContent";
 import Typography from "@mui/joy/Typography";
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { accountsLoader, type Account } from "./accounts/account";
-import { budgetLoader, type Budget } from "./budget/budget";
-import { loansLoader, type Loan } from "./loans/loan";
-import { type Asset } from "./assets/asset";
+import { Store } from "./store";
 
 export default function Sidebar(): JSX.Element {
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [budget, setBudget] = useState<Budget[]>([]);
-  const [loans, setLoans] = useState<Loan[]>([]);
-
-  useEffect(() => {
-    const storedAssets = localStorage.getItem("assets");
-
-    if (storedAssets !== null) {
-      const parsed = JSON.parse(storedAssets) as Asset[];
-      setAssets(parsed);
-    }
-
-    setAccounts(accountsLoader.load([]));
-    setBudget(budgetLoader.load([]));
-    setLoans(loansLoader.load([]));
-  }, []);
-
   const { pathname } = useLocation();
+  const { accounts, assets, budget, loans } = useContext(Store);
 
   return (
     <List
