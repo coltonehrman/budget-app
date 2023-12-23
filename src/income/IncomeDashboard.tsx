@@ -9,24 +9,14 @@ import IncomeModal from "./IncomeModal/IncomeModal";
 import { deleteIncome, incomeLoader, type Income } from "./income";
 
 export default function IncomeDashboard(): JSX.Element {
-  const { income, update } = useContext(Store);
+  const { income } = useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [, setEditItem] = useState<number | null>(null);
-
-  // const onEditItem = useCallback(
-  //   (index: number, editedIncome: Income) => {
-  //     const newIncome = editIncome(income, index, editedIncome);
-  //     incomeLoader.save(newIncome);
-  //     update();
-  //   },
-  //   [income],
-  // );
 
   const onDeleteAccount = useCallback(
     (index: number) => {
       const newIncome = deleteIncome(income, index);
-      incomeLoader.save(newIncome);
-      update();
+      // incomeLoader.save(newIncome);
     },
     [income],
   );
@@ -37,35 +27,6 @@ export default function IncomeDashboard(): JSX.Element {
         Income
       </Typography>
 
-      {/* {editItem != null && (
-        <AccountModal
-          title="Edit Account"
-          open={editItem !== null}
-          initialState={{
-            ...income[editItem],
-            balance:
-              income[editItem].balances[income[editItem].balances.length - 1]
-                .amount,
-          }}
-          setOpen={(open) => {
-            if (open === false) setEditItem(null);
-          }}
-          onSubmit={(edits) => {
-            onEditItem(editItem, {
-              ...edits,
-              balances: [
-                ...income[editItem].balances,
-                {
-                  date: new Date(),
-                  amount: edits.balance,
-                },
-              ],
-            });
-            setEditItem(null);
-          }}
-        />
-      )} */}
-
       <IncomeModal
         title="Add Income"
         open={isModalOpen}
@@ -75,7 +36,6 @@ export default function IncomeDashboard(): JSX.Element {
 
           incomeLoader.save(newIncome);
           setIsModalOpen(false);
-          update();
         }}
       />
 

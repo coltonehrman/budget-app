@@ -1,9 +1,15 @@
-import { createContext } from "react";
-import { type Account } from "./accounts/account";
-import { type Asset } from "./assets/asset";
-import { type Budget } from "./budget/budget";
-import { type Loan } from "./loans/loan";
-import { type Income } from "./income/income";
+import { createContext, useState } from "react";
+import { accountsLoader, type Account } from "./accounts/account";
+import { assetLoader, type Asset } from "./assets/asset";
+import { budgetLoader, type Budget } from "./budget/budget";
+import {
+  loansLoader,
+  type Loan,
+  type LoanWithoutID,
+  addLoan,
+  deleteLoan,
+} from "./loans/loan";
+import { incomeLoader, type Income } from "./income/income";
 
 export const Store = createContext<{
   income: Income[];
@@ -11,12 +17,54 @@ export const Store = createContext<{
   assets: Asset[];
   budget: Budget[];
   loans: Loan[];
-  update: () => void;
+  addLoan: (loan: LoanWithoutID) => void;
+  deleteLoan: (loan: Loan) => void;
 }>({
   income: [],
   accounts: [],
   assets: [],
   budget: [],
   loans: [],
-  update: () => {},
+  addLoan: () => {},
+  deleteLoan: () => {},
 });
+
+export const StoreProvider = ({ children }: { children: JSX.Element }) => {
+  const [income, setIncome] = useState<Income[]>(incomeLoader.load([]));
+  const [accounts, setAccounts] = useState<Account[]>(accountsLoader.load([]));
+  const [assets, setAssets] = useState<Asset[]>(assetLoader.load([]));
+  const [budget, setBudget] = useState<Budget[]>(budgetLoader.load([]));
+  const [loans, setLoans] = useState<Loan[]>(loansLoader.load([]));
+
+  const _addLoan = (loan: LoanWithoutID) => {
+    setLoans((prevLoans) => {
+      const newLoans = addLoan(prevLoans, loan);
+      loansLoader.save(newLoans);
+      return newLoans;
+    });
+  };
+
+  const _deleteLoan = (loan: Loan) => {
+    setLoans((prevLoans) => {
+      const newLoans = deleteLoan(prevLoans, loan);
+      loansLoader.save(newLoans);
+      return newLoans;
+    });
+  };
+
+  return (
+    <Store.Provider
+      value={{
+        income: [...income],
+        accounts: [...accounts],
+        assets,
+        budget,
+        loans: [...loans],
+        addLoan: _addLoan,
+        deleteLoan: _deleteLoan,
+      }}
+    >
+      {children}
+    </Store.Provider>
+  );
+};

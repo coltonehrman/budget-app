@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from "react";
 import FormModal from "../common/FormModal";
-import { type Loan } from "./loan";
+import { type LoanWithoutID, type Loan } from "./loan";
 import { formatDate } from "../common/date";
 
-const DEFAULT_STATE: Loan = {
+const DEFAULT_STATE: LoanWithoutID = {
   name: "",
   apy: 0,
   balance: 0,
@@ -19,9 +19,9 @@ export default function LoanModal({
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onSubmit: (loan: Loan) => void;
+  onSubmit: (loan: LoanWithoutID) => void;
 }): JSX.Element {
-  const [loan, setLoan] = useState<Loan>(DEFAULT_STATE);
+  const [loan, setLoan] = useState<LoanWithoutID>(DEFAULT_STATE);
   const [inputDate, setInputDate] = useState(formatDate(loan.maturityDate));
 
   const onFormSubmit = useCallback(() => {

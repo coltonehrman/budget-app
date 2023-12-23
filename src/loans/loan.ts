@@ -1,6 +1,7 @@
 import { loader } from "../common/loader";
 
 export interface Loan {
+  id: number;
   name: string;
   type: "house" | "car";
   balance: number;
@@ -9,15 +10,25 @@ export interface Loan {
   maturityDate: Date;
 }
 
+export type LoanWithoutID = Omit<Loan, "id">;
+
 export const loansLoader = { ...loader<Loan>("loans") };
 
-export const deleteLoan = (
-  loans: Loan[],
-  loanIndexToDelete: number,
-): Loan[] => {
-  const copyOfLoans = [...loans];
-  copyOfLoans.splice(loanIndexToDelete, 1);
-  return copyOfLoans;
+export const getNextLoanId = (loans: Loan[]) =>
+  loans.reduce((lastId, loan) => Math.max(lastId, loan.id), 0) + 1;
+
+export const addLoan = (loans: Loan[], loan: LoanWithoutID): Loan[] => {
+  const loanWithId = {
+    id: getNextLoanId(loans),
+    ...loan,
+  };
+
+  return [...loans, loanWithId];
+};
+
+export const deleteLoan = (loans: Loan[], loanToDelete: Loan): Loan[] => {
+  const copy = [...loans];
+  return copy.filter((l) => l.id !== loanToDelete.id);
 };
 
 export const calculateMonthlyPayment = (loan: Loan): number => {

@@ -18,12 +18,3 @@ export const loader: <T>(key: string) => {
     localStorage.setItem(key, JSON.stringify(items));
   },
 });
-
-// export const deleteLoan = (
-//   loans: Loan[],
-//   loanIndexToDelete: number,
-// ): Loan[] => {
-//   const copyOfLoans = [...loans];
-//   copyOfLoans.splice(loanIndexToDelete, 1);
-//   return copyOfLoans;
-// };

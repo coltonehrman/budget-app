@@ -26,15 +26,14 @@ import {
 import { Store } from "../store";
 
 export default function AssetDashboard(): JSX.Element {
-  const { assets, update } = useContext(Store);
+  const { assets } = useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<number | null>(null);
 
   const onEditItem = useCallback(
     (index: number, editedAsset: Asset) => {
       const newAssets = editAssetItem(assets, index, editedAsset);
-      assetLoader.save(newAssets);
-      update();
+      // assetLoader.save(newAssets);
     },
     [assets],
   );
@@ -42,8 +41,7 @@ export default function AssetDashboard(): JSX.Element {
   const onDeleteAsset = useCallback(
     (index: number) => {
       const newAssets = deleteAssetItem(assets, index);
-      assetLoader.save(newAssets);
-      update();
+      // assetLoader.save(newAssets);
     },
     [assets],
   );
@@ -110,8 +108,7 @@ export default function AssetDashboard(): JSX.Element {
         onSubmit={(asset) => {
           const newAssets = [...assets, asset];
           setIsModalOpen(false);
-          assetLoader.save(newAssets);
-          update();
+          // assetLoader.save(newAssets);
         }}
       />
 

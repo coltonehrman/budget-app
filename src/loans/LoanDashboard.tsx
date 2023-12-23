@@ -11,24 +11,15 @@ import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import LoanModal from "./LoanModal";
-import { deleteLoan, loansLoader, calculateMonthlyPayment } from "./loan";
+import { calculateMonthlyPayment } from "./loan";
 import { formatDate } from "../common/date";
 import { Store } from "../store";
 
 export default function LoanDashboard(): JSX.Element {
-  const { loans, update } = useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const onDeleteLoan = useCallback(
-    (index: number) => {
-      const newLoans = deleteLoan(loans, index);
-      loansLoader.save(newLoans);
-      update();
-    },
-    [loans],
-  );
+  const { loans, addLoan, deleteLoan } = useContext(Store);
 
   return (
     <>
@@ -51,10 +42,8 @@ export default function LoanDashboard(): JSX.Element {
         open={isModalOpen}
         setOpen={setIsModalOpen}
         onSubmit={(loan) => {
+          addLoan(loan);
           setIsModalOpen(false);
-          const newLoans = [...loans, loan];
-          loansLoader.save(newLoans);
-          update();
         }}
       />
 
@@ -113,7 +102,7 @@ export default function LoanDashboard(): JSX.Element {
                       color="danger"
                       size="sm"
                       onClick={() => {
-                        onDeleteLoan(i);
+                        deleteLoan(loan);
                       }}
                     >
                       <DeleteForeverRounded />
