@@ -4,7 +4,6 @@ export interface Asset {
   name: string;
   type: string;
   value: number;
-  debt: number;
 }
 
 export const assetLoader = { ...loader<Asset>("assets") };

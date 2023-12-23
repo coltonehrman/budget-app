@@ -22,7 +22,6 @@ const DEFAULT_STATE: Asset = {
   name: "",
   type: "",
   value: 10000,
-  debt: 0,
 };
 
 export default function AssetModal({
@@ -75,7 +74,7 @@ export default function AssetModal({
 
             <Accordion defaultExpanded>
               <AccordionSummary>
-                <Typography level="title-sm">Occurance</Typography>
+                <Typography level="title-sm">Type</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Box sx={{ my: 2 }}>
@@ -109,28 +108,6 @@ export default function AssetModal({
                       setState({
                         ...state,
                         value: Number.isNaN(newValue) ? 0 : newValue,
-                      });
-                    }}
-                    placeholder="$ 0"
-                  />
-                </Box>
-              </AccordionDetails>
-            </Accordion>
-
-            <Accordion defaultExpanded>
-              <AccordionSummary>
-                <Typography level="title-sm">Debt</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ my: 2 }}>
-                  <Input
-                    value={state.debt}
-                    onChange={(e) => {
-                      const newValue = Number(e.target.value);
-
-                      setState({
-                        ...state,
-                        debt: Number.isNaN(newValue) ? 0 : newValue,
                       });
                     }}
                     placeholder="$ 0"

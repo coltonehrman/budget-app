@@ -3,7 +3,6 @@ import {
   DeleteForeverRounded,
   Edit,
   House,
-  MoneyRounded,
 } from "@mui/icons-material";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
@@ -12,11 +11,9 @@ import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import Button from "@mui/joy/Button";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
-import CircularProgress from "@mui/joy/CircularProgress";
 import Divider from "@mui/joy/Divider";
 import IconButton from "@mui/joy/IconButton";
 import Link from "@mui/joy/Link";
-import SvgIcon from "@mui/joy/SvgIcon";
 import Typography from "@mui/joy/Typography";
 import React, { useCallback, useContext, useState } from "react";
 import AssetModal from "./asset-modal/AssetModal";
@@ -134,12 +131,11 @@ export default function AssetDashboard(): JSX.Element {
                 <AccountBalance />
               </Box>
 
-              <Typography level="body-md">Networth</Typography>
+              <Typography level="body-md">Total Assets Value</Typography>
               <Typography level="h2">
                 ${" "}
                 {new Intl.NumberFormat().format(
-                  assets.reduce((net, ass) => net + ass.value, 0) -
-                    assets.reduce((net, ass) => net + ass.debt, 0),
+                  assets.reduce((net, ass) => net + ass.value, 0),
                 )}
               </Typography>
             </CardContent>
@@ -166,54 +162,41 @@ export default function AssetDashboard(): JSX.Element {
               invertedColors
             >
               <CardContent orientation="horizontal">
-                <CircularProgress
-                  size="lg"
-                  determinate
-                  value={Math.max(
-                    ((asset.value - asset.debt) / asset.value) * 100,
-                    0,
-                  )}
-                >
-                  <SvgIcon>
-                    <MoneyRounded />
-                  </SvgIcon>
-                </CircularProgress>
                 <CardContent>
-                  <Box sx={{ ml: "auto" }}>
-                    <IconButton
-                      sx={{
-                        marginRight: 1,
-                      }}
-                      variant="soft"
-                      color="danger"
-                      size="sm"
-                      onClick={() => {
-                        setEditItem(i);
-                      }}
-                    >
-                      <Edit />
-                    </IconButton>
+                  <Box display="flex">
+                    {asset.type === "house" && <House />}
+                    <Box sx={{ ml: "auto" }}>
+                      <IconButton
+                        sx={{
+                          marginRight: 1,
+                        }}
+                        variant="soft"
+                        color="danger"
+                        size="sm"
+                        onClick={() => {
+                          setEditItem(i);
+                        }}
+                      >
+                        <Edit />
+                      </IconButton>
 
-                    <IconButton
-                      variant="soft"
-                      color="danger"
-                      size="sm"
-                      sx={{ ml: "auto" }}
-                      onClick={() => {
-                        onDeleteAsset(i);
-                      }}
-                    >
-                      <DeleteForeverRounded />
-                    </IconButton>
+                      <IconButton
+                        variant="soft"
+                        color="danger"
+                        size="sm"
+                        sx={{ ml: "auto" }}
+                        onClick={() => {
+                          onDeleteAsset(i);
+                        }}
+                      >
+                        <DeleteForeverRounded />
+                      </IconButton>
+                    </Box>
                   </Box>
 
-                  {asset.type === "house" && <House />}
                   <Typography level="body-md">{asset.name}</Typography>
                   <Typography level="h2">
                     $ {new Intl.NumberFormat().format(asset.value)}
-                  </Typography>
-                  <Typography level="h4">
-                    $ -{new Intl.NumberFormat().format(asset.debt)}
                   </Typography>
                 </CardContent>
               </CardContent>

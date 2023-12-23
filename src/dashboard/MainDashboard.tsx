@@ -288,8 +288,9 @@ export default function MainDashboard(): JSX.Element {
                     return net + acc.balances[acc.balances.length - 1].amount;
                   }, 0) +
                     assets.reduce((sum, ass) => {
-                      return sum + ass.value - ass.debt;
-                    }, 0),
+                      return sum + ass.value;
+                    }, 0) -
+                    loans.reduce((sum, loan) => sum + loan.balance, 0),
                 )}
               </Typography>
             </CardContent>
