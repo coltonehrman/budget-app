@@ -1,18 +1,19 @@
+import { AccountBalance, Money, MoneyOff, Paid } from "@mui/icons-material";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import { Button, Card, CardContent, Tooltip } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import Divider from "@mui/joy/Divider";
 import Link from "@mui/joy/Link";
+import Snackbar from "@mui/joy/Snackbar";
 import Typography from "@mui/joy/Typography";
-import Calendar, { type Level, type Activity } from "react-activity-calendar";
-import React, { useContext, useEffect, useState } from "react";
-import { Button, Card, CardContent, Tooltip } from "@mui/joy";
 import { eachDayOfInterval, formatISO } from "date-fns";
-import DailyModal from "./DailyModal";
+import React, { useContext, useEffect, useState } from "react";
+import Calendar, { type Activity, type Level } from "react-activity-calendar";
 import { convertToDaily, typeConverter } from "../budget/utils/budget";
-import { AccountBalance, Money, MoneyOff, Paid } from "@mui/icons-material";
 import { Store } from "../store";
+import DailyModal from "./DailyModal";
 
 type Done = Record<string, { count: number; level: Level } | undefined>;
 
@@ -40,6 +41,7 @@ const STORAGE_KEY = "daily-spending";
 type DailySpending = Record<string, number[]>;
 
 export default function MainDashboard(): JSX.Element {
+  const [snackbar, setSnackbar] = useState<number[] | null>(null);
   const { accounts, assets, loans, budget } = useContext(Store);
   const [dailySpending, setDailySpending] = useState<DailySpending>({});
   const [didEnterDailyPrompt, setDidEnterDailyPrompt] = useState(true);
@@ -80,6 +82,21 @@ export default function MainDashboard(): JSX.Element {
 
   return (
     <>
+      <Snackbar
+        variant="soft"
+        color="primary"
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={snackbar !== null}
+        onClose={() => {
+          setSnackbar(null);
+        }}
+      >
+        {snackbar
+          ?.filter((n, i, arr) => (arr.length > 1 ? n > 0 : true))
+          .map((n) => `$${n}`)
+          .join(" + ")}
+      </Snackbar>
+
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Breadcrumbs
           size="sm"
@@ -180,6 +197,11 @@ export default function MainDashboard(): JSX.Element {
               .reduce((sum, i) => sum + i, 0)
               .toFixed(2)}`;
           return <Tooltip title={title}>{block}</Tooltip>;
+        }}
+        eventHandlers={{
+          onClick: () => (activity) => {
+            setSnackbar(dailySpending[activity.date] ?? null);
+          },
         }}
       />
       <Box

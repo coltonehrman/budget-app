@@ -69,6 +69,7 @@ export default function DailyModal({
               color="primary"
               onClick={() => {
                 onSubmit(parseFloat(state.amount));
+                setState({ amount: "" });
               }}
             >
               Submit
