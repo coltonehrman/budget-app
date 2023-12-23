@@ -1,32 +1,36 @@
+import { Menu } from "@mui/icons-material";
 import Box from "@mui/joy/Box";
+import { Fab } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import BudgetDashboard from "./budget/BudgetDashboard";
 import DesktopSidebar from "./DesktopSidebar";
-import AssetDashboard from "./assets/AssetDashboard";
-import AccountDashboard from "./accounts/AccountsDashboard";
-import LoanDashboard from "./loans/LoanDashboard";
-import MainDashboard from "./dashboard/MainDashboard";
 import MobileSidebar from "./MobileSidebar";
-import { Fab } from "@mui/material";
-import { Menu } from "@mui/icons-material";
-import { type Account, accountsLoader } from "./accounts/account";
-import { type Asset, assetLoader } from "./assets/asset";
-import { type Budget, budgetLoader } from "./budget/budget";
-import { type Loan, loansLoader } from "./loans/loan";
+import AccountDashboard from "./accounts/AccountsDashboard";
+import { accountsLoader, type Account } from "./accounts/account";
+import AssetDashboard from "./assets/AssetDashboard";
+import { assetLoader, type Asset } from "./assets/asset";
+import BudgetDashboard from "./budget/BudgetDashboard";
+import { budgetLoader, type Budget } from "./budget/budget";
+import MainDashboard from "./dashboard/MainDashboard";
+import { incomeLoader, type Income } from "./income/income";
+import LoanDashboard from "./loans/LoanDashboard";
+import { loansLoader, type Loan } from "./loans/loan";
 import { Store } from "./store";
+import IncomeDashboard from "./income/IncomeDashboard";
 
 export default function App(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
 
+  const [income, setIncome] = useState<Income[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [budget, setBudget] = useState<Budget[]>([]);
   const [loans, setLoans] = useState<Loan[]>([]);
 
   const update = useCallback(() => {
-    setAssets(assetLoader.load([]));
+    setIncome(incomeLoader.load([]));
     setAccounts(accountsLoader.load([]));
+    setAssets(assetLoader.load([]));
     setBudget(budgetLoader.load([]));
     setLoans(loansLoader.load([]));
   }, [setAssets, setAccounts, setBudget, setLoans]);
@@ -38,6 +42,7 @@ export default function App(): JSX.Element {
   return (
     <Store.Provider
       value={{
+        income,
         accounts,
         assets,
         budget,
@@ -89,9 +94,10 @@ export default function App(): JSX.Element {
         >
           <Routes>
             <Route path="/" element={<MainDashboard />} />
-            <Route path="/budget" element={<BudgetDashboard />} />
-            <Route path="/assets" element={<AssetDashboard />} />
+            <Route path="/income" element={<IncomeDashboard />} />
             <Route path="/accounts" element={<AccountDashboard />} />
+            <Route path="/assets" element={<AssetDashboard />} />
+            <Route path="/budget" element={<BudgetDashboard />} />
             <Route path="/loans" element={<LoanDashboard />} />
           </Routes>
         </Box>

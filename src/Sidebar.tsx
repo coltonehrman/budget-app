@@ -14,7 +14,7 @@ import { Store } from "./store";
 
 export default function Sidebar(): JSX.Element {
   const { pathname } = useLocation();
-  const { accounts, assets, budget, loans } = useContext(Store);
+  const { income, accounts, assets, budget, loans } = useContext(Store);
 
   return (
     <List
@@ -32,6 +32,20 @@ export default function Sidebar(): JSX.Element {
             <RouterLink to="/" style={{ textDecoration: "none" }}>
               <Box display="flex" gap={1}>
                 <Typography level="title-sm">Dashboard</Typography>
+              </Box>
+            </RouterLink>
+          </ListItemContent>
+        </ListItemButton>
+      </ListItem>
+
+      <ListItem>
+        <ListItemButton selected={pathname === "/income"}>
+          <WalletIcon />
+          <ListItemContent>
+            <RouterLink to="/income" style={{ textDecoration: "none" }}>
+              <Box display="flex" gap={1}>
+                <Typography level="title-sm">Income</Typography>
+                <Chip size="sm">{income.length}</Chip>
               </Box>
             </RouterLink>
           </ListItemContent>

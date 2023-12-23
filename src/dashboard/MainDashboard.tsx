@@ -14,6 +14,8 @@ import Calendar, { type Activity, type Level } from "react-activity-calendar";
 import { convertToDaily, typeConverter } from "../budget/utils/budget";
 import { Store } from "../store";
 import DailyModal from "./DailyModal";
+import { getNextPayday } from "../income/income";
+import { formatDate } from "../common/date";
 
 type Done = Record<string, { count: number; level: Level } | undefined>;
 
@@ -42,7 +44,7 @@ type DailySpending = Record<string, number[]>;
 
 export default function MainDashboard(): JSX.Element {
   const [snackbar, setSnackbar] = useState<number[] | null>(null);
-  const { accounts, assets, loans, budget } = useContext(Store);
+  const { income, accounts, assets, loans, budget } = useContext(Store);
   const [dailySpending, setDailySpending] = useState<DailySpending>({});
   const [didEnterDailyPrompt, setDidEnterDailyPrompt] = useState(true);
 
@@ -321,6 +323,39 @@ export default function MainDashboard(): JSX.Element {
             </CardContent>
           </Card>
         </Box>
+      </Box>
+
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
+          gap: 2,
+        }}
+      >
+        {income.map((i) => {
+          return getNextPayday(i);
+        })[0] != null && (
+          <Box>
+            <Card variant="soft" color="success" invertedColors>
+              <CardContent>
+                <Box>
+                  <Money />
+                </Box>
+
+                <Typography level="body-md">Next Payday</Typography>
+                <Typography level="h2">
+                  {formatDate(
+                    income.map((i) => {
+                      return getNextPayday(i);
+                    })[0],
+                  )}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+        )}
       </Box>
     </>
   );

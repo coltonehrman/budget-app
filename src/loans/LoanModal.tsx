@@ -22,7 +22,6 @@ export default function LoanModal({
   onSubmit: (loan: Loan) => void;
 }): JSX.Element {
   const [loan, setLoan] = useState<Loan>(DEFAULT_STATE);
-
   const [inputDate, setInputDate] = useState(formatDate(loan.maturityDate));
 
   const onFormSubmit = useCallback(() => {
