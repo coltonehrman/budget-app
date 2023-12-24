@@ -8,7 +8,7 @@ import Divider from "@mui/joy/Divider";
 import Link from "@mui/joy/Link";
 import Snackbar from "@mui/joy/Snackbar";
 import Typography from "@mui/joy/Typography";
-import { eachDayOfInterval, formatISO } from "date-fns";
+import { differenceInDays, eachDayOfInterval, formatISO } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import Calendar, { type Activity, type Level } from "react-activity-calendar";
 import { convertToDaily, typeConverter } from "../budget/utils/budget";
@@ -72,15 +72,18 @@ export default function MainDashboard(): JSX.Element {
     return parseFloat((dailyIncome - dailyExpenses).toFixed(2));
   };
 
+  const firstDayBudget = Object.keys(dailySpending).reduce((firstDay, date) => {
+    if (new Date(firstDay) < new Date(date)) return firstDay;
+    return new Date(date);
+  }, new Date());
+
   const totalSpent = Object.keys(dailySpending).reduce((sum, date) => {
     const dailyTotal = dailySpending[date].reduce((sum, i) => sum + i, 0);
     return sum + dailyTotal;
   }, 0);
 
-  const totalBudget = Object.keys(dailySpending).reduce((sum, date) => {
-    const limit = getDailyAllowedSpending();
-    return sum + limit;
-  }, 0);
+  const daysSinceFirstDayBudget = differenceInDays(new Date(), firstDayBudget);
+  const totalBudget = getDailyAllowedSpending() * daysSinceFirstDayBudget;
 
   return (
     <>
