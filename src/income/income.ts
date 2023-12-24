@@ -1,10 +1,18 @@
+import { isSameDay } from "date-fns";
 import { loader } from "../common/loader";
 
+export interface PayDay {
+  date: Date;
+  amount: number;
+}
+
 export interface Income {
+  id: number;
   name: string;
   type: "w2" | null;
   startPayDay: Date;
   payDayOccurance: "bi-weekly";
+  payDays: PayDay[];
 }
 
 export const incomeLoader = { ...loader<Income>("income") };
@@ -36,9 +44,7 @@ const addWeeksToDate = (dateObj: Date, numberOfWeeks: number): Date => {
 export const getNextPayday = (income: Income): Date => {
   if (income.payDayOccurance === "bi-weekly") {
     let day = new Date(income.startPayDay);
-    // console.log(day.valueOf(), Date.now());
-    while (day.valueOf() < Date.now()) {
-      console.log("adding 2 weeks");
+    while (!isSameDay(day, new Date())) {
       day = addWeeksToDate(day, 2);
     }
     return day;

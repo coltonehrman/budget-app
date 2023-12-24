@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 import { accountsLoader, type Account } from "./accounts/account";
 import { assetLoader, type Asset } from "./assets/asset";
 import { budgetLoader, type Budget } from "./budget/budget";
@@ -19,6 +19,7 @@ export const Store = createContext<{
   loans: Loan[];
   addLoan: (loan: LoanWithoutID) => void;
   deleteLoan: (loan: Loan) => void;
+  submitPayDay: (income: Income, amount: number) => void;
 }>({
   income: [],
   accounts: [],
@@ -27,6 +28,7 @@ export const Store = createContext<{
   loans: [],
   addLoan: () => {},
   deleteLoan: () => {},
+  submitPayDay: () => {},
 });
 
 export const StoreProvider = ({ children }: { children: JSX.Element }) => {
@@ -36,7 +38,7 @@ export const StoreProvider = ({ children }: { children: JSX.Element }) => {
   const [budget, setBudget] = useState<Budget[]>(budgetLoader.load([]));
   const [loans, setLoans] = useState<Loan[]>(loansLoader.load([]));
 
-  const _addLoan = (loan: LoanWithoutID) => {
+  const _addLoan = (loan: LoanWithoutID): void => {
     setLoans((prevLoans) => {
       const newLoans = addLoan(prevLoans, loan);
       loansLoader.save(newLoans);
@@ -44,11 +46,37 @@ export const StoreProvider = ({ children }: { children: JSX.Element }) => {
     });
   };
 
-  const _deleteLoan = (loan: Loan) => {
+  const _deleteLoan = (loan: Loan): void => {
     setLoans((prevLoans) => {
       const newLoans = deleteLoan(prevLoans, loan);
       loansLoader.save(newLoans);
       return newLoans;
+    });
+  };
+
+  const _submitPayDay = (income: Income, amount: number): void => {
+    setIncome((prevIncome) => {
+      const copy = prevIncome.find((i) => i.id === income.id);
+
+      if (copy == null) return prevIncome;
+
+      if (copy.payDays == null) {
+        copy.payDays = [
+          {
+            date: new Date(),
+            amount,
+          },
+        ];
+      } else {
+        copy.payDays.push({
+          date: new Date(),
+          amount,
+        });
+      }
+
+      const newIncome = [...prevIncome.filter((i) => i.id !== copy.id), copy];
+      incomeLoader.save(newIncome);
+      return newIncome;
     });
   };
 
@@ -62,6 +90,7 @@ export const StoreProvider = ({ children }: { children: JSX.Element }) => {
         loans: [...loans],
         addLoan: _addLoan,
         deleteLoan: _deleteLoan,
+        submitPayDay: _submitPayDay,
       }}
     >
       {children}

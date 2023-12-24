@@ -16,7 +16,9 @@ import { type Income } from "../income";
 import IncomeAccordion from "./IncomeAccordion";
 import { formatDate } from "../../common/date";
 
-const DEFAULT_STATE: Income = {
+type IncomeInput = Omit<Income, "id" | "payDays">;
+
+const DEFAULT_STATE: IncomeInput = {
   name: "",
   type: "w2",
   startPayDay: new Date(),
@@ -33,11 +35,11 @@ export default function IncomeModal({
   title: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onSubmit: (addedIncome: Income) => void;
-  initialState?: Income;
+  onSubmit: (addedIncome: IncomeInput) => void;
+  initialState?: IncomeInput;
 }): JSX.Element {
-  const [inputState, setInputState] = useState<Income>(
-    (initialState ?? DEFAULT_STATE) as unknown as Income,
+  const [inputState, setInputState] = useState<IncomeInput>(
+    (initialState ?? DEFAULT_STATE) as unknown as IncomeInput,
   );
   const [inputDate, setInputDate] = useState(
     formatDate(inputState.startPayDay),
