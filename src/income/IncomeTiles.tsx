@@ -13,8 +13,8 @@ export default function IncomeTiles({
   setEditItem,
 }: {
   income: Income[];
-  onDelete: (index: number) => void;
-  setEditItem: (value: React.SetStateAction<number | null>) => void;
+  onDelete: (item: Income) => void;
+  setEditItem: (value: React.SetStateAction<Income | null>) => void;
 }): JSX.Element {
   return (
     <Box
@@ -42,7 +42,7 @@ export default function IncomeTiles({
                       color="danger"
                       size="sm"
                       onClick={() => {
-                        setEditItem(i);
+                        setEditItem(income);
                       }}
                     >
                       <Edit />
@@ -53,7 +53,7 @@ export default function IncomeTiles({
                       color="danger"
                       size="sm"
                       onClick={() => {
-                        onDelete(i);
+                        onDelete(income);
                       }}
                     >
                       <DeleteForeverRounded />

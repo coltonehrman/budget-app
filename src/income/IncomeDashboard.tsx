@@ -2,19 +2,20 @@ import { Divider } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
+import { isSameDay } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import { Store } from "../store";
-import IncomeTiles from "./IncomeTiles";
 import IncomeModal from "./IncomeModal/IncomeModal";
-import { incomeLoader, type Income, getNextPayday } from "./income";
+import IncomeTiles from "./IncomeTiles";
 import PayDayModal from "./PayDayModal";
-import { isSameDay } from "date-fns";
+import { getNextPayday, type Income } from "./income";
 
 export default function IncomeDashboard(): JSX.Element {
-  const { income, submitPayDay } = useContext(Store);
+  const { income, editIncome, addIncome, deleteIncome, submitPayDay } =
+    useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isPayDay, setIsPayDay] = useState<boolean>(false);
-  const [, setEditItem] = useState<number | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<Income | null>(null);
 
   useEffect(() => {
     const nextPayDays = income.reduce<Date[]>((days, i) => {
@@ -28,7 +29,6 @@ export default function IncomeDashboard(): JSX.Element {
         // return without adding to nextPayDays
         return days;
       }
-      console.log(i, nextPayDay);
       return [...days, nextPayDay];
     }, []);
 
@@ -44,13 +44,30 @@ export default function IncomeDashboard(): JSX.Element {
         Income
       </Typography>
 
+      {itemToEdit != null && (
+        <IncomeModal
+          open
+          title="Edit Income"
+          setOpen={(isOpen) => {
+            isOpen === false && setItemToEdit(null); // closes modal
+          }}
+          initialState={itemToEdit}
+          onSubmit={(editedIncome) => {
+            editIncome({
+              ...itemToEdit,
+              ...editedIncome,
+            });
+            setItemToEdit(null); // closes modal
+          }}
+        />
+      )}
+
       <IncomeModal
         title="Add Income"
         open={isModalOpen}
         setOpen={setIsModalOpen}
         onSubmit={(addedIncome) => {
-          // const newIncome: Income[] = [...income, addedIncome];
-          // incomeLoader.save(newIncome);
+          addIncome(addedIncome);
           setIsModalOpen(false);
         }}
       />
@@ -58,6 +75,9 @@ export default function IncomeDashboard(): JSX.Element {
       <PayDayModal
         title="Pay Day"
         open={isPayDay}
+        close={() => {
+          setIsPayDay(false);
+        }}
         onSubmit={(amount) => {
           submitPayDay(income[0], amount);
         }}
@@ -79,8 +99,8 @@ export default function IncomeDashboard(): JSX.Element {
       <Box sx={{ my: 2 }}>
         <IncomeTiles
           income={income}
-          onDelete={() => {}}
-          setEditItem={setEditItem}
+          onDelete={deleteIncome}
+          setEditItem={setItemToEdit}
         />
       </Box>
     </>

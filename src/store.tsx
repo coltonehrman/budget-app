@@ -1,15 +1,53 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import { accountsLoader, type Account } from "./accounts/account";
 import { assetLoader, type Asset } from "./assets/asset";
 import { budgetLoader, type Budget } from "./budget/budget";
 import {
+  addNewIncome,
+  incomeLoader,
+  type Income,
+  type NewIncome,
+  editIncome,
+  deleteIncome,
+} from "./income/income";
+import {
+  addLoan,
+  deleteLoan,
   loansLoader,
   type Loan,
   type LoanWithoutID,
-  addLoan,
-  deleteLoan,
 } from "./loans/loan";
-import { incomeLoader, type Income } from "./income/income";
+
+// @ts-expect-error ...
+window.__export_local_storage = () => {
+  // @ts-expect-error ...
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  function download(filename) {
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      "data:application/json;charset=utf-8," +
+        "{" +
+        Object.keys(localStorage)
+          .map((key) => `"${key}": ${localStorage.getItem(key)}`)
+          .join(",") +
+        "}",
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    element.setAttribute("download", filename);
+
+    element.style.display = "none";
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
+  download("budget-local-storage-export.json");
+};
 
 export const Store = createContext<{
   income: Income[];
@@ -17,9 +55,12 @@ export const Store = createContext<{
   assets: Asset[];
   budget: Budget[];
   loans: Loan[];
-  addLoan: (loan: LoanWithoutID) => void;
-  deleteLoan: (loan: Loan) => void;
-  submitPayDay: (income: Income, amount: number) => void;
+  addLoan: (item: LoanWithoutID) => void;
+  deleteLoan: (item: Loan) => void;
+  submitPayDay: (item: Income, amount: number) => void;
+  addIncome: (item: NewIncome) => void;
+  editIncome: (item: Income) => void;
+  deleteIncome: (item: Income) => void;
 }>({
   income: [],
   accounts: [],
@@ -29,56 +70,98 @@ export const Store = createContext<{
   addLoan: () => {},
   deleteLoan: () => {},
   submitPayDay: () => {},
+  addIncome: () => {},
+  editIncome: () => {},
+  deleteIncome: () => {},
 });
 
-export const StoreProvider = ({ children }: { children: JSX.Element }) => {
-  const [income, setIncome] = useState<Income[]>(incomeLoader.load([]));
-  const [accounts, setAccounts] = useState<Account[]>(accountsLoader.load([]));
-  const [assets, setAssets] = useState<Asset[]>(assetLoader.load([]));
-  const [budget, setBudget] = useState<Budget[]>(budgetLoader.load([]));
-  const [loans, setLoans] = useState<Loan[]>(loansLoader.load([]));
+export const StoreProvider = ({
+  children,
+}: {
+  children: JSX.Element;
+}): JSX.Element => {
+  const [income, setIncome] = useState<Income[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [budget, setBudget] = useState<Budget[]>([]);
+  const [loans, setLoans] = useState<Loan[]>([]);
 
-  const _addLoan = (loan: LoanWithoutID): void => {
+  useEffect(() => {
+    const storedIncome = incomeLoader.load();
+    try {
+      const jsonIncome = JSON.parse(storedIncome);
+      const convertedIncome = jsonIncome.map((i: any) => ({
+        ...i,
+        startPayDay: new Date((i.startPayDay as string) ?? ""),
+        payDays: (i.payDays ?? []).map((p: any) => ({
+          ...p,
+          date: new Date((p.date as string) ?? ""),
+        })),
+      }));
+
+      console.log(convertedIncome);
+      setIncome((_) => convertedIncome);
+    } catch (e) {}
+  }, []);
+
+  const _addLoan = useCallback((loan: LoanWithoutID): void => {
     setLoans((prevLoans) => {
       const newLoans = addLoan(prevLoans, loan);
       loansLoader.save(newLoans);
       return newLoans;
     });
-  };
+  }, []);
 
-  const _deleteLoan = (loan: Loan): void => {
+  const _deleteLoan = useCallback((loan: Loan): void => {
     setLoans((prevLoans) => {
       const newLoans = deleteLoan(prevLoans, loan);
       loansLoader.save(newLoans);
       return newLoans;
     });
-  };
+  }, []);
 
-  const _submitPayDay = (income: Income, amount: number): void => {
+  const _submitPayDay = useCallback((income: Income, amount: number): void => {
     setIncome((prevIncome) => {
-      const copy = prevIncome.find((i) => i.id === income.id);
+      const copy = [...prevIncome];
+      const index = copy.findIndex((i) => i.id === income.id);
+      const item = copy[index];
 
-      if (copy == null) return prevIncome;
+      if (item == null) return prevIncome;
 
-      if (copy.payDays == null) {
-        copy.payDays = [
+      if (item.payDays == null) {
+        item.payDays = [
           {
             date: new Date(),
             amount,
           },
         ];
       } else {
-        copy.payDays.push({
+        item.payDays.push({
           date: new Date(),
           amount,
         });
       }
 
-      const newIncome = [...prevIncome.filter((i) => i.id !== copy.id), copy];
+      console.log(item);
+
+      const newIncome = [...prevIncome.filter((i) => i.id !== item.id), item];
+      console.log(newIncome);
       incomeLoader.save(newIncome);
       return newIncome;
     });
-  };
+  }, []);
+
+  const _addIncome = useCallback((itemToAdd: NewIncome): void => {
+    setIncome(addNewIncome(itemToAdd));
+  }, []);
+
+  const _editIncome = useCallback((edittedItem: Income): void => {
+    setIncome(editIncome(edittedItem));
+  }, []);
+
+  const _deleteIncome = useCallback((itemToDelete: Income): void => {
+    setIncome(deleteIncome(itemToDelete));
+  }, []);
 
   return (
     <Store.Provider
@@ -91,6 +174,9 @@ export const StoreProvider = ({ children }: { children: JSX.Element }) => {
         addLoan: _addLoan,
         deleteLoan: _deleteLoan,
         submitPayDay: _submitPayDay,
+        addIncome: _addIncome,
+        editIncome: _editIncome,
+        deleteIncome: _deleteIncome,
       }}
     >
       {children}

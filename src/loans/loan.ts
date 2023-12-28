@@ -14,7 +14,7 @@ export type LoanWithoutID = Omit<Loan, "id">;
 
 export const loansLoader = { ...loader<Loan>("loans") };
 
-export const getNextLoanId = (loans: Loan[]) =>
+export const getNextLoanId = (loans: Loan[]): number =>
   loans.reduce((lastId, loan) => Math.max(lastId, loan.id), 0) + 1;
 
 export const addLoan = (loans: Loan[], loan: LoanWithoutID): Loan[] => {

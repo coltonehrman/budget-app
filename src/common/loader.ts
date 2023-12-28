@@ -1,18 +1,15 @@
 export const loader: <T>(key: string) => {
-  load: (items: T[]) => T[];
+  load: () => string;
   save: (items: T[]) => void;
 } = (key) => ({
-  load: (items) => {
-    if (items.length === 0) {
-      const storedItems = localStorage.getItem(key);
+  load: () => {
+    const storedItems = localStorage.getItem(key);
 
-      if (storedItems !== null) {
-        const parsedStoredItems = JSON.parse(storedItems);
-        return parsedStoredItems;
-      }
+    if (storedItems !== null) {
+      return storedItems;
     }
 
-    return items;
+    return "";
   },
   save: (items) => {
     localStorage.setItem(key, JSON.stringify(items));

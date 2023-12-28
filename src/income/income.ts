@@ -1,6 +1,9 @@
 import { isSameDay } from "date-fns";
 import { loader } from "../common/loader";
 
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 export interface PayDay {
   date: Date;
   amount: number;
@@ -15,26 +18,43 @@ export interface Income {
   payDays: PayDay[];
 }
 
+export type NewIncome = PartialBy<Income, "id" | "payDays">;
+
 export const incomeLoader = { ...loader<Income>("income") };
 
-export const editIncome = (
-  income: Income[],
-  incomeIndexToEdit: number,
-  incomeEdits: Income,
-): Income[] => {
-  const copy = [...income];
-  copy[incomeIndexToEdit] = incomeEdits;
-  return copy;
+export const getNextId = (income: Income[]): number =>
+  income.reduce((lastId, income) => Math.max(lastId, income.id), 0) + 1;
+
+export const addNewIncome =
+  (incomeToAdd: NewIncome) => (prevIncome: Income[]) => {
+    const newIncome = [
+      ...prevIncome,
+      {
+        id: incomeToAdd.id ?? getNextId(prevIncome),
+        payDays: incomeToAdd.payDays ?? [],
+        ...incomeToAdd,
+      },
+    ];
+    incomeLoader.save(newIncome);
+    return newIncome;
+  };
+
+export const editIncome = (edittedIncome: Income) => (prevIncome: Income[]) => {
+  const modifiedIncome = [...prevIncome];
+  const edittedIncomeIndex = modifiedIncome.findIndex(
+    (i) => i.id === edittedIncome.id,
+  );
+  modifiedIncome[edittedIncomeIndex] = edittedIncome;
+  incomeLoader.save(modifiedIncome);
+  return modifiedIncome;
 };
 
-export const deleteIncome = (
-  income: Income[],
-  incomeIndexToDelete: number,
-): Income[] => {
-  const copy = [...income];
-  copy.splice(incomeIndexToDelete, 1);
-  return copy;
-};
+export const deleteIncome =
+  (itemToDelete: Income) => (prevIncome: Income[]) => {
+    const modifiedIncome = prevIncome.filter((i) => i.id !== itemToDelete.id);
+    incomeLoader.save(modifiedIncome);
+    return modifiedIncome;
+  };
 
 const addWeeksToDate = (dateObj: Date, numberOfWeeks: number): Date => {
   dateObj.setDate(dateObj.getDate() + numberOfWeeks * 7);
@@ -44,7 +64,7 @@ const addWeeksToDate = (dateObj: Date, numberOfWeeks: number): Date => {
 export const getNextPayday = (income: Income): Date => {
   if (income.payDayOccurance === "bi-weekly") {
     let day = new Date(income.startPayDay);
-    while (!isSameDay(day, new Date())) {
+    while (day.valueOf() < Date.now() && !isSameDay(day, new Date())) {
       day = addWeeksToDate(day, 2);
     }
     return day;
