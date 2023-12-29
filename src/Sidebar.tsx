@@ -1,4 +1,10 @@
-import { AttachMoneyOutlined, Home } from "@mui/icons-material";
+import {
+  AttachMoneyOutlined,
+  Dashboard,
+  Home,
+  Savings,
+  VolunteerActivism,
+} from "@mui/icons-material";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import WalletIcon from "@mui/icons-material/Wallet";
 import Box from "@mui/joy/Box";
@@ -27,7 +33,7 @@ export default function Sidebar(): JSX.Element {
     >
       <ListItem>
         <ListItemButton selected={pathname === "/"}>
-          <Home />
+          <Dashboard />
           <ListItemContent>
             <RouterLink to="/" style={{ textDecoration: "none" }}>
               <Box display="flex" gap={1}>
@@ -54,7 +60,7 @@ export default function Sidebar(): JSX.Element {
 
       <ListItem>
         <ListItemButton selected={pathname === "/accounts"}>
-          <WalletIcon />
+          <Savings />
           <ListItemContent>
             <RouterLink to="/accounts" style={{ textDecoration: "none" }}>
               <Box display="flex" gap={1}>
@@ -68,7 +74,7 @@ export default function Sidebar(): JSX.Element {
 
       <ListItem>
         <ListItemButton selected={pathname === "/loans"}>
-          <WalletIcon />
+          <VolunteerActivism />
           <ListItemContent>
             <RouterLink to="/loans" style={{ textDecoration: "none" }}>
               <Box display="flex" gap={1}>

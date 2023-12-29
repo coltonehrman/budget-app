@@ -1,8 +1,7 @@
 import { addMonths, addWeeks, isSameDay } from "date-fns";
 import { loader } from "../common/loader";
-
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+import { type PartialBy } from "../common/types";
+import { getNextId } from "../common/id";
 
 export interface PayDay {
   date: Date;
@@ -21,9 +20,6 @@ export interface Income {
 export type NewIncome = PartialBy<Income, "id" | "payDays">;
 
 export const incomeLoader = { ...loader<Income>("income") };
-
-export const getNextId = (income: Income[]): number =>
-  income.reduce((lastId, income) => Math.max(lastId, income.id), 0) + 1;
 
 export const addNewIncome =
   (incomeToAdd: NewIncome) => (prevIncome: Income[]) => {

@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { accountsLoader, type Account } from "./accounts/account";
-import { assetLoader, type Asset } from "./assets/asset";
+import { assetLoader, type Asset, NewAsset, addNewAsset } from "./assets/asset";
 import { budgetLoader, type Budget } from "./budget/budget";
 import {
   addNewIncome,
@@ -61,6 +61,7 @@ export const Store = createContext<{
   addIncome: (item: NewIncome) => void;
   editIncome: (item: Income) => void;
   deleteIncome: (item: Income) => void;
+  addAsset: (item: NewAsset) => void;
 }>({
   income: [],
   accounts: [],
@@ -73,6 +74,7 @@ export const Store = createContext<{
   addIncome: () => {},
   editIncome: () => {},
   deleteIncome: () => {},
+  addAsset: () => {},
 });
 
 export const StoreProvider = ({
@@ -88,8 +90,11 @@ export const StoreProvider = ({
 
   useEffect(() => {
     const storedIncome = incomeLoader.load();
+    const storedAssets = assetLoader.load();
+
     try {
       const jsonIncome = JSON.parse(storedIncome);
+
       const convertedIncome = jsonIncome.map((i: any) => ({
         ...i,
         startPayDay: new Date((i.startPayDay as string) ?? ""),
@@ -100,6 +105,10 @@ export const StoreProvider = ({
       }));
 
       setIncome((_) => convertedIncome);
+
+      const jsonAssets = JSON.parse(storedAssets) as Asset[];
+
+      setAssets(jsonAssets);
     } catch (e) {}
   }, []);
 
@@ -162,6 +171,10 @@ export const StoreProvider = ({
     setIncome(deleteIncome(itemToDelete));
   }, []);
 
+  const _addAsset = useCallback((itemToAdd: NewAsset): void => {
+    setAssets(addNewAsset(itemToAdd));
+  }, []);
+
   return (
     <Store.Provider
       value={{
@@ -176,6 +189,7 @@ export const StoreProvider = ({
         addIncome: _addIncome,
         editIncome: _editIncome,
         deleteIncome: _deleteIncome,
+        addAsset: _addAsset,
       }}
     >
       {children}

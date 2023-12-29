@@ -15,36 +15,14 @@ import Divider from "@mui/joy/Divider";
 import IconButton from "@mui/joy/IconButton";
 import Link from "@mui/joy/Link";
 import Typography from "@mui/joy/Typography";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import AssetModal from "./asset-modal/AssetModal";
-import {
-  assetLoader,
-  type Asset,
-  editAssetItem,
-  deleteAssetItem,
-} from "./asset";
 import { Store } from "../store";
 
 export default function AssetDashboard(): JSX.Element {
-  const { assets } = useContext(Store);
+  const { assets, addAsset } = useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<number | null>(null);
-
-  const onEditItem = useCallback(
-    (index: number, editedAsset: Asset) => {
-      const newAssets = editAssetItem(assets, index, editedAsset);
-      // assetLoader.save(newAssets);
-    },
-    [assets],
-  );
-
-  const onDeleteAsset = useCallback(
-    (index: number) => {
-      const newAssets = deleteAssetItem(assets, index);
-      // assetLoader.save(newAssets);
-    },
-    [assets],
-  );
 
   return (
     <>
@@ -95,7 +73,7 @@ export default function AssetDashboard(): JSX.Element {
             if (open === false) setEditItem(null);
           }}
           onSubmit={(edits) => {
-            onEditItem(editItem, edits);
+            // onEditItem(editItem, edits);
             setEditItem(null);
           }}
         />
@@ -106,9 +84,8 @@ export default function AssetDashboard(): JSX.Element {
         open={isModalOpen}
         setOpen={setIsModalOpen}
         onSubmit={(asset) => {
-          const newAssets = [...assets, asset];
+          addAsset(asset);
           setIsModalOpen(false);
-          // assetLoader.save(newAssets);
         }}
       />
 
@@ -183,7 +160,7 @@ export default function AssetDashboard(): JSX.Element {
                         size="sm"
                         sx={{ ml: "auto" }}
                         onClick={() => {
-                          onDeleteAsset(i);
+                          // onDeleteAsset(i);
                         }}
                       >
                         <DeleteForeverRounded />

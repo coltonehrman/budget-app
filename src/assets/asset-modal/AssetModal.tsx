@@ -16,9 +16,9 @@ import {
 } from "@mui/joy";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import { type Asset } from "../asset";
+import { type NewAsset, type Asset } from "../asset";
 
-const DEFAULT_STATE: Asset = {
+const DEFAULT_STATE: NewAsset = {
   name: "",
   type: "",
   value: 10000,
@@ -34,10 +34,10 @@ export default function AssetModal({
   title: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onSubmit: (asset: Asset) => void;
+  onSubmit: (asset: NewAsset) => void;
   initialState?: Asset;
 }): JSX.Element {
-  const [state, setState] = useState<Asset>(initialState ?? DEFAULT_STATE);
+  const [state, setState] = useState<NewAsset>(initialState ?? DEFAULT_STATE);
 
   return (
     <>
