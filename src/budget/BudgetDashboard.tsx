@@ -10,7 +10,7 @@ import Divider from "@mui/joy/Divider";
 import Link from "@mui/joy/Link";
 import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import AddBudgetItemModal from "./budget-item-modal/AddBudgetItemModal";
 import EditBudgetItemModal from "./budget-item-modal/EditBudgetItemModal";
 import BudgetTable from "./budget-table/BudgetTable";
@@ -32,10 +32,6 @@ export default function BudgetDashboard(): JSX.Element {
   const [items, setItems] = useState<Budget[]>([]);
   const [addItemOpen, setAddItemOpen] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<number | null>(null);
-
-  useEffect(() => {
-    setItems(budgetLoader.load(items));
-  }, []);
 
   const onEditItem = useCallback(
     (index: number, editedItem: Budget) => {

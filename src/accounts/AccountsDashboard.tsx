@@ -8,7 +8,7 @@ import {
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import AccountDashboardBreadcrumbs from "./AccountDashboardBreadcrumbs";
 import AccountModal from "./AccountModal/AccountModal";
 import {
@@ -25,10 +25,6 @@ export default function AccountDashboard(): JSX.Element {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<number | null>(null);
-
-  useEffect(() => {
-    setAccounts(accountsLoader.load(accounts));
-  }, []);
 
   const onEditItem = useCallback(
     (index: number, editedAccount: Account) => {
