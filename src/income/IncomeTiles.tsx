@@ -1,4 +1,9 @@
-import { DeleteForeverRounded, Edit, Work } from "@mui/icons-material";
+import {
+  Apartment,
+  DeleteForeverRounded,
+  Edit,
+  Work,
+} from "@mui/icons-material";
 import Box from "@mui/joy/Box";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
@@ -31,7 +36,8 @@ export default function IncomeTiles({
             <Card variant="soft" color="primary" invertedColors>
               <CardContent>
                 <Box display="flex" justifyContent="space-between">
-                  <Work />
+                  {income.type === "w2" && <Work />}
+                  {income.type === "rental" && <Apartment />}
 
                   <Box>
                     <IconButton

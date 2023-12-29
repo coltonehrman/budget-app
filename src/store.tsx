@@ -99,7 +99,6 @@ export const StoreProvider = ({
         })),
       }));
 
-      console.log(convertedIncome);
       setIncome((_) => convertedIncome);
     } catch (e) {}
   }, []);

@@ -1,4 +1,4 @@
-import { isSameDay } from "date-fns";
+import { addMonths, addWeeks, isSameDay } from "date-fns";
 import { loader } from "../common/loader";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -12,9 +12,9 @@ export interface PayDay {
 export interface Income {
   id: number;
   name: string;
-  type: "w2" | null;
+  type: "w2" | "rental" | null;
   startPayDay: Date;
-  payDayOccurance: "bi-weekly";
+  payDayOccurance: "bi-weekly" | "monthly";
   payDays: PayDay[];
 }
 
@@ -56,16 +56,19 @@ export const deleteIncome =
     return modifiedIncome;
   };
 
-const addWeeksToDate = (dateObj: Date, numberOfWeeks: number): Date => {
-  dateObj.setDate(dateObj.getDate() + numberOfWeeks * 7);
-  return dateObj;
-};
-
 export const getNextPayday = (income: Income): Date => {
   if (income.payDayOccurance === "bi-weekly") {
     let day = new Date(income.startPayDay);
     while (day.valueOf() < Date.now() && !isSameDay(day, new Date())) {
-      day = addWeeksToDate(day, 2);
+      day = addWeeks(day, 2);
+    }
+    return day;
+  }
+
+  if (income.payDayOccurance === "monthly") {
+    let day = new Date(income.startPayDay);
+    while (day.valueOf() < Date.now() && !isSameDay(day, new Date())) {
+      day = addMonths(day, 1);
     }
     return day;
   }

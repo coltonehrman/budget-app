@@ -82,6 +82,7 @@ export default function IncomeModal({
               }}
             >
               <Option value="w2">W2</Option>
+              <Option value="rental">Rental</Option>
             </Select>
           </IncomeAccordion>
 
@@ -96,6 +97,7 @@ export default function IncomeModal({
               }}
             >
               <Option value="bi-weekly">Bi-Weekly</Option>
+              <Option value="monthly">Monthly</Option>
             </Select>
           </IncomeAccordion>
 

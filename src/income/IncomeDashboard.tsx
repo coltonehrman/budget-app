@@ -14,28 +14,27 @@ export default function IncomeDashboard(): JSX.Element {
   const { income, editIncome, addIncome, deleteIncome, submitPayDay } =
     useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isPayDay, setIsPayDay] = useState<boolean>(false);
+  const [payDayFor, setPayDayFor] = useState<Income | null>(null);
   const [itemToEdit, setItemToEdit] = useState<Income | null>(null);
 
   useEffect(() => {
-    const nextPayDays = income.reduce<Date[]>((days, i) => {
-      const nextPayDay = getNextPayday(i);
-      // if has a payday already
+    const incomeWithUpComingPayDays = income.filter((income) => {
+      const nextPayDay = getNextPayday(income);
+
       if (
-        i.payDays?.some((payDay) =>
+        income.payDays?.some((payDay) =>
           isSameDay(new Date(payDay.date), nextPayDay),
         )
       ) {
-        // return without adding to nextPayDays
-        return days;
+        // remove income if the payday for the nextPayDay already exists
+        return false;
       }
-      return [...days, nextPayDay];
-    }, []);
 
-    const nextPayDayIsToday = nextPayDays.map((day) =>
-      isSameDay(new Date(), day),
-    );
-    setIsPayDay(nextPayDayIsToday.includes(true));
+      // keep income if the nextPayDay falls on today
+      return isSameDay(new Date(), nextPayDay);
+    });
+
+    setPayDayFor(incomeWithUpComingPayDays[0] ?? null);
   }, [income]);
 
   return (
@@ -72,16 +71,19 @@ export default function IncomeDashboard(): JSX.Element {
         }}
       />
 
-      <PayDayModal
-        title="Pay Day"
-        open={isPayDay}
-        close={() => {
-          setIsPayDay(false);
-        }}
-        onSubmit={(amount) => {
-          submitPayDay(income[0], amount);
-        }}
-      />
+      {payDayFor !== null && (
+        <PayDayModal
+          title={`${payDayFor.name} - Pay Day!`}
+          open={true}
+          close={() => {
+            setPayDayFor(null); // closes payday modal
+          }}
+          onSubmit={(amount) => {
+            submitPayDay(payDayFor, amount);
+            setPayDayFor(null);
+          }}
+        />
+      )}
 
       <Box sx={{ marginTop: 1 }}>
         <Button
