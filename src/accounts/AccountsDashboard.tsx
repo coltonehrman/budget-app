@@ -8,41 +8,20 @@ import {
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
-import React, { useCallback, useState } from "react";
+import React, { useContext, useState } from "react";
 import AccountDashboardBreadcrumbs from "./AccountDashboardBreadcrumbs";
 import AccountModal from "./AccountModal/AccountModal";
-import {
-  type Account,
-  accountsLoader,
-  deleteAccount,
-  editAccount,
-} from "./account";
+import { type Account } from "./account";
 import AccountTiles from "./AccountTiles";
 import NetworthCard from "./NetworthCard";
 import DebtCard from "./DebtCard";
+import { Store } from "../store";
 
 export default function AccountDashboard(): JSX.Element {
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const { accounts, addAccount, editAccount, deleteAccount } =
+    useContext(Store);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [editItem, setEditItem] = useState<number | null>(null);
-
-  const onEditItem = useCallback(
-    (index: number, editedAccount: Account) => {
-      const newAccounts = editAccount(accounts, index, editedAccount);
-      setAccounts(newAccounts);
-      accountsLoader.save(newAccounts);
-    },
-    [accounts, setAccounts],
-  );
-
-  const onDeleteAccount = useCallback(
-    (index: number) => {
-      const newAccounts = deleteAccount(accounts, index);
-      setAccounts(newAccounts);
-      accountsLoader.save(newAccounts);
-    },
-    [accounts, setAccounts],
-  );
+  const [editItem, setEditItem] = useState<Account | null>(null);
 
   return (
     <>
@@ -56,27 +35,21 @@ export default function AccountDashboard(): JSX.Element {
         <AccountModal
           title="Edit Account"
           open={editItem !== null}
-          initialState={{
-            ...accounts[editItem],
-            balance:
-              accounts[editItem].balances[
-                accounts[editItem].balances.length - 1
-              ].amount,
-          }}
+          initialState={editItem}
           setOpen={(open) => {
             if (open === false) setEditItem(null);
           }}
           onSubmit={(edits) => {
-            onEditItem(editItem, {
+            const modifiedAccount = {
+              ...editItem,
               ...edits,
-              balances: [
-                ...accounts[editItem].balances,
-                {
-                  date: new Date(),
-                  amount: edits.balance,
-                },
-              ],
-            });
+              balances: editItem.balances.concat({
+                amount: edits.balance,
+                date: new Date(),
+              }),
+            } as Account;
+
+            editAccount(modifiedAccount);
             setEditItem(null);
           }}
         />
@@ -86,26 +59,9 @@ export default function AccountDashboard(): JSX.Element {
         title="Add Account"
         open={isModalOpen}
         setOpen={setIsModalOpen}
-        onSubmit={(asset) => {
-          console.log(asset);
-
-          const newAccounts: Account[] = [
-            ...accounts,
-            {
-              ...asset,
-              balances: [
-                {
-                  date: new Date(),
-                  amount: asset.balance,
-                },
-              ],
-            },
-          ];
-
-          setAccounts(newAccounts);
+        onSubmit={(account) => {
+          addAccount(account);
           setIsModalOpen(false);
-
-          accountsLoader.save(newAccounts);
         }}
       />
 
@@ -152,7 +108,7 @@ export default function AccountDashboard(): JSX.Element {
                 <AccountTiles
                   accounts={accounts}
                   type="checking"
-                  onDeleteAccount={onDeleteAccount}
+                  onDeleteAccount={deleteAccount}
                   setEditItem={setEditItem}
                 />
               </Box>
@@ -169,7 +125,7 @@ export default function AccountDashboard(): JSX.Element {
                 <AccountTiles
                   accounts={accounts}
                   type="savings"
-                  onDeleteAccount={onDeleteAccount}
+                  onDeleteAccount={deleteAccount}
                   setEditItem={setEditItem}
                 />
               </Box>
@@ -186,7 +142,7 @@ export default function AccountDashboard(): JSX.Element {
                 <AccountTiles
                   accounts={accounts}
                   type="credit"
-                  onDeleteAccount={onDeleteAccount}
+                  onDeleteAccount={deleteAccount}
                   setEditItem={setEditItem}
                 />
               </Box>
@@ -203,7 +159,7 @@ export default function AccountDashboard(): JSX.Element {
                 <AccountTiles
                   accounts={accounts}
                   type="investment"
-                  onDeleteAccount={onDeleteAccount}
+                  onDeleteAccount={deleteAccount}
                   setEditItem={setEditItem}
                 />
               </Box>

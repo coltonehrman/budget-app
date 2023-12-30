@@ -1,5 +1,12 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
-import { type Account } from "./accounts/account";
+import {
+  accountsLoader,
+  type Account,
+  addNewAccount,
+  editAccount,
+  deleteAccount,
+  NewAccount,
+} from "./accounts/account";
 import { assetLoader, type Asset, NewAsset, addNewAsset } from "./assets/asset";
 import { type Budget } from "./budget/budget";
 import {
@@ -56,19 +63,27 @@ window.__export_local_storage = () => {
 
 export const Store = createContext<{
   dailySpending?: DailySpending;
-  income: Income[];
-  accounts: Account[];
-  assets: Asset[];
-  budget: Budget[];
-  loans: Loan[];
   addDailySpending: (item: number, dailyBudget: number) => void;
-  addLoan: (item: LoanWithoutID) => void;
-  deleteLoan: (item: Loan) => void;
-  submitPayDay: (item: Income, amount: number) => void;
+
+  income: Income[];
   addIncome: (item: NewIncome) => void;
   editIncome: (item: Income) => void;
   deleteIncome: (item: Income) => void;
+  submitPayDay: (item: Income, amount: number) => void;
+
+  accounts: Account[];
+  addAccount: (item: NewAccount) => void;
+  editAccount: (item: Account) => void;
+  deleteAccount: (item: Account) => void;
+
+  assets: Asset[];
   addAsset: (item: NewAsset) => void;
+
+  budget: Budget[];
+
+  loans: Loan[];
+  addLoan: (item: LoanWithoutID) => void;
+  deleteLoan: (item: Loan) => void;
 }>({
   income: [],
   accounts: [],
@@ -83,6 +98,9 @@ export const Store = createContext<{
   editIncome: () => {},
   deleteIncome: () => {},
   addAsset: () => {},
+  addAccount: () => {},
+  editAccount: () => {},
+  deleteAccount: () => {},
 });
 
 export const StoreProvider = ({
@@ -102,6 +120,7 @@ export const StoreProvider = ({
   useEffect(() => {
     const storedIncome = incomeLoader.load();
     const storedAssets = assetLoader.load();
+    const storedAccounts = accountsLoader.load();
     const storedDailySpending = dailySpendingLoader.load();
 
     try {
@@ -126,6 +145,10 @@ export const StoreProvider = ({
       ) as DailySpending;
 
       setDailySpending(jsonDailySpending);
+
+      const jsonAccounts = JSON.parse(storedAccounts || "[]");
+
+      setAccounts(jsonAccounts);
     } catch (e) {
       console.error(e);
     }
@@ -198,6 +221,18 @@ export const StoreProvider = ({
     setAssets(addNewAsset(itemToAdd));
   }, []);
 
+  const _addAccount = useCallback((itemToAdd: NewAccount): void => {
+    setAccounts(addNewAccount(itemToAdd));
+  }, []);
+
+  const _editAccount = useCallback((edittedItem: Account): void => {
+    setAccounts(editAccount(edittedItem));
+  }, []);
+
+  const _deleteAccount = useCallback((itemToDelete: Account): void => {
+    setAccounts(deleteAccount(itemToDelete));
+  }, []);
+
   return (
     <Store.Provider
       value={{
@@ -215,6 +250,9 @@ export const StoreProvider = ({
         editIncome: _editIncome,
         deleteIncome: _deleteIncome,
         addAsset: _addAsset,
+        addAccount: _addAccount,
+        editAccount: _editAccount,
+        deleteAccount: _deleteAccount,
       }}
     >
       {children}

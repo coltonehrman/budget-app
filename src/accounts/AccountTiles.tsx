@@ -23,8 +23,8 @@ export default function AccountTiles({
 }: {
   accounts: Account[];
   type: Account["type"];
-  setEditItem: (value: React.SetStateAction<number | null>) => void;
-  onDeleteAccount: (index: number) => void;
+  setEditItem: (value: React.SetStateAction<Account | null>) => void;
+  onDeleteAccount: (account: Account) => void;
 }): JSX.Element {
   return (
     <Box
@@ -60,7 +60,7 @@ export default function AccountTiles({
                       color="danger"
                       size="sm"
                       onClick={() => {
-                        setEditItem(i);
+                        setEditItem(account);
                       }}
                     >
                       <Edit />
@@ -71,7 +71,7 @@ export default function AccountTiles({
                       color="danger"
                       size="sm"
                       onClick={() => {
-                        onDeleteAccount(i);
+                        onDeleteAccount(account);
                       }}
                     >
                       <DeleteForeverRounded />

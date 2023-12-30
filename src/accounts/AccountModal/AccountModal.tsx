@@ -12,16 +12,12 @@ import {
 } from "@mui/joy";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import { type Account } from "../account";
+import { type NewAccount, type Account } from "../account";
 import AccountAccordion from "./AccountAccordion";
 
-type AccountInput = Omit<Account, "balances"> & {
-  balance: number;
-};
+type InputState = Record<keyof NewAccount, string | null>;
 
-type InputState = Record<keyof AccountInput, string | null>;
-
-const DEFAULT_STATE: AccountInput = {
+const DEFAULT_STATE: NewAccount = {
   name: "",
   type: "checking",
   balance: 0,
@@ -38,8 +34,8 @@ export default function AccountModal({
   title: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onSubmit: (asset: AccountInput) => void;
-  initialState?: AccountInput;
+  onSubmit: (account: NewAccount) => void;
+  initialState?: Account;
 }): JSX.Element {
   const [inputState, setInputState] = useState<InputState>(
     (initialState ?? DEFAULT_STATE) as unknown as InputState,
