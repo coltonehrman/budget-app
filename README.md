@@ -1,69 +1,48 @@
-# Enterprise App
+# Open-Source Buget App
+
+![Budget Dashboard View](/images/budget-dashboard-img.png)
+
+## Features
+
+### Dashboard
+
+_Track your daily spending habits and build a budget based on your income and expenses._
+
+### Income
+
+_Track your income sources to help you with your budget._
+
+### Accounts
+
+_Track your "money" accounts to manage your finances all in one place._
+
+### Loans
+
+_Track your loans/debt account to manage your fiances all in one place._
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
 ## Tools
 
-1. [Husky](#husky)
-1. [Lint-Staged](#lint-staged)
-1. [Commitizen](#commitizen)
-1. [ESLint](#eslint)
-1. [Prettier](#prettier)
-1. [TypeScript](#typescript)
+1. [Husky](https://typicode.github.io/husky/)
+1. [Lint-Staged](https://github.com/lint-staged/lint-staged)
+1. [Commitizen](https://commitizen.github.io/cz-cli/)
+1. [ESLint](https://eslint.org/)
+1. [Prettier](https://prettier.io/)
+1. [TypeScript](https://www.typescriptlang.org/)
+1. [vite](https://vitejs.dev/)
 
-### [Husky](https://github.com/typicode/husky)
+## Tech
 
-Integration with git hooks to allow for triggering events during git lifecyle (ie: git commit).
+1. [React](https://react.dev/)
+1. [React Router DOM](https://reactrouter.com/en/main)
+   - _Hash Router for Github Pages deployment_
+1. [date-fns](https://date-fns.org/)
+1. [Material UI](https://mui.com/material-ui/getting-started/)
+   - [Joy UI](https://mui.com/joy-ui/getting-started/)
 
-Was setup initially in project by running `npx husky install`. _This command does not have to be ran again._
+### Getting Started
 
-#### Config
-
-1. `.husky/*`
-
-### [Lint-Staged](https://github.com/lint-staged/lint-staged)
-
-Used for easily configuring what commands to run during git staged lifecyle hook. Used in combination with **husky**.
-
-#### Config
-
-Lives in `package.json`, under **lint-staged**.
-
-### [Commitizen](https://github.com/commitizen/cz-cli)
-
-Used to format and assist with git commit messages.
-
-#### Config
-
-Lives in `package.json`, under **config.commitizen**.
-
-#### Commands
-
-- `git commit` - When running this, **commitzen** will take over because of **husky** hook integration.
-
-### [ESLint](https://eslint.org/)
-
-#### Config
-
-1. `.eslintrc.json`
-
-### [Prettier](https://github.com/prettier/prettier)
-
-CLI tool for formatting files in your project. Keeps formatting consitent with an opinionated approach to reduce decision overhead and keep things simple.
-
-#### Commands
-
-- `git commit` - When running this, **prettier** will take over because of **husky** hook integration.
-- `npx prettier . --check`
-- `npx prettier . --write`
-
-#### Config
-
-1. `.prettierignore`
-1. `.prettierrc`
-
-### [TypeScript](https://www.typescriptlang.org/)
-
-#### Config
-
-1. `tsconfig.json`
+1. Clone project
+1. Run `npm run install`
+1. Run `npm run dev`
