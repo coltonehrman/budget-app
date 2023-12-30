@@ -1,6 +1,6 @@
 export const loader: <T>(key: string) => {
   load: () => string;
-  save: (items: T[]) => void;
+  save: (items: T) => void;
 } = (key) => ({
   load: () => {
     const storedItems = localStorage.getItem(key);

@@ -32,7 +32,10 @@ export default function DailyModal({
   return (
     <>
       <Modal open={open} onClose={close}>
-        <ModalDialog minWidth={550} sx={{ overflow: "scroll" }}>
+        <ModalDialog
+          minWidth={550}
+          sx={{ overflow: "scroll", overflowX: "hidden" }}
+        >
           <Typography level="h4">How much did you spend today?</Typography>
 
           <AccordionGroup>

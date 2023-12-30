@@ -12,7 +12,7 @@ export interface Account {
   link: string | null;
 }
 
-export const accountsLoader = { ...loader<Account>("accounts") };
+export const accountsLoader = { ...loader<Account[]>("accounts") };
 
 export const editAccount = (
   accounts: Account[],

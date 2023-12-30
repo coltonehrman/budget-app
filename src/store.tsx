@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
-import { accountsLoader, type Account } from "./accounts/account";
+import { type Account } from "./accounts/account";
 import { assetLoader, type Asset, NewAsset, addNewAsset } from "./assets/asset";
-import { budgetLoader, type Budget } from "./budget/budget";
+import { type Budget } from "./budget/budget";
 import {
   addNewIncome,
   incomeLoader,
@@ -17,6 +17,11 @@ import {
   type Loan,
   type LoanWithoutID,
 } from "./loans/loan";
+import {
+  DailySpending,
+  dailySpendingLoader,
+  spendMoneyForTheDay,
+} from "./dashboard/dailySpending";
 
 // @ts-expect-error ...
 window.__export_local_storage = () => {
@@ -50,11 +55,13 @@ window.__export_local_storage = () => {
 };
 
 export const Store = createContext<{
+  dailySpending?: DailySpending;
   income: Income[];
   accounts: Account[];
   assets: Asset[];
   budget: Budget[];
   loans: Loan[];
+  addDailySpending: (item: number, dailyBudget: number) => void;
   addLoan: (item: LoanWithoutID) => void;
   deleteLoan: (item: Loan) => void;
   submitPayDay: (item: Income, amount: number) => void;
@@ -68,6 +75,7 @@ export const Store = createContext<{
   assets: [],
   budget: [],
   loans: [],
+  addDailySpending: () => {},
   addLoan: () => {},
   deleteLoan: () => {},
   submitPayDay: () => {},
@@ -82,6 +90,9 @@ export const StoreProvider = ({
 }: {
   children: JSX.Element;
 }): JSX.Element => {
+  const [dailySpending, setDailySpending] = useState<
+    DailySpending | undefined
+  >();
   const [income, setIncome] = useState<Income[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -91,9 +102,10 @@ export const StoreProvider = ({
   useEffect(() => {
     const storedIncome = incomeLoader.load();
     const storedAssets = assetLoader.load();
+    const storedDailySpending = dailySpendingLoader.load();
 
     try {
-      const jsonIncome = JSON.parse(storedIncome);
+      const jsonIncome = JSON.parse(storedIncome || "[]");
 
       const convertedIncome = jsonIncome.map((i: any) => ({
         ...i,
@@ -106,10 +118,17 @@ export const StoreProvider = ({
 
       setIncome((_) => convertedIncome);
 
-      const jsonAssets = JSON.parse(storedAssets) as Asset[];
-
+      const jsonAssets = JSON.parse(storedAssets || "[]") as Asset[];
       setAssets(jsonAssets);
-    } catch (e) {}
+
+      const jsonDailySpending = JSON.parse(
+        storedDailySpending || "{}",
+      ) as DailySpending;
+
+      setDailySpending(jsonDailySpending);
+    } catch (e) {
+      console.error(e);
+    }
   }, []);
 
   const _addLoan = useCallback((loan: LoanWithoutID): void => {
@@ -150,14 +169,18 @@ export const StoreProvider = ({
         });
       }
 
-      console.log(item);
-
       const newIncome = [...prevIncome.filter((i) => i.id !== item.id), item];
-      console.log(newIncome);
       incomeLoader.save(newIncome);
       return newIncome;
     });
   }, []);
+
+  const _addDailySpending = useCallback(
+    (amountToSpend: number, dailyBudget: number): void => {
+      setDailySpending(spendMoneyForTheDay(amountToSpend, dailyBudget));
+    },
+    [],
+  );
 
   const _addIncome = useCallback((itemToAdd: NewIncome): void => {
     setIncome(addNewIncome(itemToAdd));
@@ -178,11 +201,13 @@ export const StoreProvider = ({
   return (
     <Store.Provider
       value={{
+        dailySpending,
         income: [...income],
         accounts: [...accounts],
         assets,
         budget,
         loans: [...loans],
+        addDailySpending: _addDailySpending,
         addLoan: _addLoan,
         deleteLoan: _deleteLoan,
         submitPayDay: _submitPayDay,

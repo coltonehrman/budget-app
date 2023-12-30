@@ -11,7 +11,7 @@ export interface Asset {
 
 export type NewAsset = PartialBy<Asset, "id">;
 
-export const assetLoader = { ...loader<Asset>("assets") };
+export const assetLoader = { ...loader<Asset[]>("assets") };
 
 export const addNewAsset = (itemToAdd: NewAsset) => (prevItems: Asset[]) => {
   const newItems = [

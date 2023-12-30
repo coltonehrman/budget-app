@@ -7,7 +7,7 @@ export interface Budget {
   amount: number;
 }
 
-export const budgetLoader = { ...loader<Budget>("budget-items") };
+export const budgetLoader = { ...loader<Budget[]>("budget-items") };
 
 export const editBudgetItem = (
   items: Budget[],

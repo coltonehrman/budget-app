@@ -11,7 +11,6 @@ import Typography from "@mui/joy/Typography";
 import { differenceInDays, eachDayOfInterval, formatISO } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import Calendar, { type Activity, type Level } from "react-activity-calendar";
-import { convertToDaily, typeConverter } from "../budget/utils/budget";
 import { Store } from "../store";
 import DailyModal from "./DailyModal";
 import { getNextPayday } from "../income/income";
@@ -38,52 +37,76 @@ function generateEmptyData(activities: Done): Activity[] {
   });
 }
 
-const STORAGE_KEY = "daily-spending";
-
-type DailySpending = Record<string, number[]>;
-
 export default function MainDashboard(): JSX.Element {
   const [snackbar, setSnackbar] = useState<number[] | null>(null);
-  const { income, accounts, assets, loans, budget } = useContext(Store);
-  const [dailySpending, setDailySpending] = useState<DailySpending>({});
+  const {
+    addDailySpending,
+    dailySpending,
+    income,
+    accounts,
+    assets,
+    loans,
+    budget,
+  } = useContext(Store);
   const [didEnterDailyPrompt, setDidEnterDailyPrompt] = useState(true);
 
   useEffect(() => {
-    const storedDailySpending: DailySpending = JSON.parse(
-      localStorage.getItem(STORAGE_KEY) ?? "{}",
-    );
     const today = formatISO(new Date(), { representation: "date" });
 
-    if (storedDailySpending[today] == null) {
-      setDidEnterDailyPrompt(false);
-    }
+    if (dailySpending == null) return;
 
-    setDailySpending(storedDailySpending);
-  }, []);
+    if (dailySpending[today] == null) {
+      setDidEnterDailyPrompt(false);
+    } else {
+      setDidEnterDailyPrompt(true);
+    }
+  }, [dailySpending]);
 
   const getDailyAllowedSpending = (): number => {
-    const dailyIncome = parseFloat(
-      typeConverter(budget, "income", convertToDaily),
-    );
-    const dailyExpenses = parseFloat(
-      typeConverter(budget, "expense", convertToDaily),
+    const dailyAverageIncome = parseFloat(
+      income
+        .reduce((dailyAverage, income) => {
+          const sumPayDays = income.payDays.reduce(
+            (sum, pay) => sum + pay.amount,
+            0,
+          );
+          const avgPayDay = sumPayDays / income.payDays.length;
+          let incomeDailyAverage = 0;
+
+          if (income.payDayOccurance === "bi-weekly") {
+            incomeDailyAverage = (avgPayDay * 26) / 365;
+          }
+
+          return dailyAverage + incomeDailyAverage;
+        }, 0)
+        .toFixed(2),
     );
 
-    return parseFloat((dailyIncome - dailyExpenses).toFixed(2));
+    return dailyAverageIncome;
   };
 
-  const firstDayBudget = Object.keys(dailySpending).reduce((firstDay, date) => {
-    if (new Date(firstDay) < new Date(date)) return firstDay;
-    return new Date(date);
-  }, new Date());
+  const firstDayBudget = Object.keys(dailySpending ?? {}).reduce(
+    (firstDay, date) => {
+      if (new Date(firstDay) < new Date(date)) return firstDay;
+      return new Date(date);
+    },
+    new Date(),
+  );
 
-  const totalSpent = Object.keys(dailySpending).reduce((sum, date) => {
-    const dailyTotal = dailySpending[date].reduce((sum, i) => sum + i, 0);
+  const totalSpent = Object.keys(dailySpending ?? {}).reduce((sum, date) => {
+    const dailyTotal = (dailySpending ?? {})[date].spending.reduce(
+      (sum, i) => sum + i,
+      0,
+    );
     return sum + dailyTotal;
   }, 0);
 
   const daysSinceFirstDayBudget = differenceInDays(new Date(), firstDayBudget);
-  const totalBudget = getDailyAllowedSpending() * daysSinceFirstDayBudget;
+  const totalBudget =
+    Object.keys(dailySpending ?? {}).reduce(
+      (sum, date) => sum + ((dailySpending ?? {})[date]?.dailyBudget ?? 0),
+      0,
+    ) * daysSinceFirstDayBudget;
 
   return (
     <>
@@ -122,32 +145,25 @@ export default function MainDashboard(): JSX.Element {
           </Link>
         </Breadcrumbs>
       </Box>
+
       <Typography level="h2" component="h1">
         Dashboard
       </Typography>
+
       <Divider sx={{ my: 1 }} />
+
       <DailyModal
         open={!didEnterDailyPrompt}
         onSubmit={(amountSpent) => {
-          const dailySpending = JSON.parse(
-            localStorage.getItem(STORAGE_KEY) ?? "{}",
-          ) as DailySpending;
           const today = formatISO(new Date(), { representation: "date" });
-
-          if (dailySpending[today] != null) {
-            dailySpending[today].push(amountSpent);
-          } else {
-            dailySpending[today] = [amountSpent];
-          }
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(dailySpending));
-          setDailySpending(dailySpending);
-          setDidEnterDailyPrompt(true);
+          addDailySpending(amountSpent, getDailyAllowedSpending());
         }}
         dailyAllowedSpending={`$ ${getDailyAllowedSpending()}`}
         close={() => {
           setDidEnterDailyPrompt(true);
         }}
       />
+
       <Box>
         <Button
           size="md"
@@ -158,6 +174,7 @@ export default function MainDashboard(): JSX.Element {
           Spend Money
         </Button>
       </Box>
+
       <Calendar
         blockMargin={5}
         blockSize={25}
@@ -176,18 +193,28 @@ export default function MainDashboard(): JSX.Element {
           light: ["#f0f0f0", "#c4edde", "#7ac7c4", "#f73859", "#384259"],
         }}
         data={generateEmptyData(
-          Object.keys(dailySpending).reduce<Record<string, any>>(
+          Object.keys(dailySpending ?? {}).reduce<Record<string, any>>(
             (items, date) => {
-              const limit = getDailyAllowedSpending();
+              const limit = (dailySpending ?? {})[date].dailyBudget ?? 0;
               let level = 3;
-              if (dailySpending[date].reduce((sum, i) => sum + i, 0) === 0)
+              if (
+                (dailySpending ?? {})[date].spending.reduce(
+                  (sum, i) => sum + i,
+                  0,
+                ) === 0
+              )
                 level = 1;
-              if (dailySpending[date].reduce((sum, i) => sum + i, 0) <= limit)
+              if (
+                (dailySpending ?? {})[date].spending.reduce(
+                  (sum, i) => sum + i,
+                  0,
+                ) <= limit
+              )
                 level = 2;
 
               items[date] = {
                 level,
-                count: dailySpending[date].length,
+                count: (dailySpending ?? {})[date].spending.length,
               };
 
               return items;
@@ -197,18 +224,19 @@ export default function MainDashboard(): JSX.Element {
         )}
         renderBlock={(block, activity) => {
           let title = activity.date;
-          if (dailySpending[activity.date] != null)
-            title += ` | Spent $${dailySpending[activity.date]
+          if ((dailySpending ?? {})[activity.date] != null)
+            title += ` | Spent $${(dailySpending ?? {})[activity.date].spending
               .reduce((sum, i) => sum + i, 0)
               .toFixed(2)}`;
           return <Tooltip title={title}>{block}</Tooltip>;
         }}
         eventHandlers={{
           onClick: () => (activity) => {
-            setSnackbar(dailySpending[activity.date] ?? null);
+            setSnackbar((dailySpending ?? {})[activity.date].spending ?? null);
           },
         }}
       />
+
       <Box
         sx={{
           width: "100%",

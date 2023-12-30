@@ -19,7 +19,7 @@ export interface Income {
 
 export type NewIncome = PartialBy<Income, "id" | "payDays">;
 
-export const incomeLoader = { ...loader<Income>("income") };
+export const incomeLoader = { ...loader<Income[]>("income") };
 
 export const addNewIncome =
   (incomeToAdd: NewIncome) => (prevIncome: Income[]) => {
