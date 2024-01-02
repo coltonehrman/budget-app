@@ -12,6 +12,7 @@ import MainDashboard from "./dashboard/MainDashboard";
 import LoanDashboard from "./loans/LoanDashboard";
 import { StoreProvider } from "./store";
 import IncomeDashboard from "./income/IncomeDashboard";
+import ExpensesDashboard from "./expenses/ExpensesDashboard";
 
 export default function App(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,6 +64,7 @@ export default function App(): JSX.Element {
           <Routes>
             <Route path="/" element={<MainDashboard />} />
             <Route path="/income" element={<IncomeDashboard />} />
+            <Route path="/expenses" element={<ExpensesDashboard />} />
             <Route path="/accounts" element={<AccountDashboard />} />
             <Route path="/assets" element={<AssetDashboard />} />
             <Route path="/budget" element={<BudgetDashboard />} />

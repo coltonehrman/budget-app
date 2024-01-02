@@ -29,6 +29,14 @@ import {
   dailySpendingLoader,
   spendMoneyForTheDay,
 } from "./dashboard/dailySpending";
+import {
+  Expense,
+  NewExpense,
+  addNewExpense,
+  deleteExpense,
+  editExpense,
+  expensesLoader,
+} from "./expenses/expenses";
 
 // @ts-expect-error ...
 window.__export_local_storage = () => {
@@ -71,6 +79,11 @@ export const Store = createContext<{
   deleteIncome: (item: Income) => void;
   submitPayDay: (item: Income, amount: number) => void;
 
+  expenses: Expense[];
+  addExpense: (item: NewExpense) => void;
+  editExpense: (item: Expense) => void;
+  deleteExpense: (item: Expense) => void;
+
   accounts: Account[];
   addAccount: (item: NewAccount) => void;
   editAccount: (item: Account) => void;
@@ -101,6 +114,11 @@ export const Store = createContext<{
   addAccount: () => {},
   editAccount: () => {},
   deleteAccount: () => {},
+
+  expenses: [],
+  addExpense: () => {},
+  editExpense: () => {},
+  deleteExpense: () => {},
 });
 
 export const StoreProvider = ({
@@ -112,6 +130,7 @@ export const StoreProvider = ({
     DailySpending | undefined
   >();
   const [income, setIncome] = useState<Income[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [budget, setBudget] = useState<Budget[]>([]);
@@ -119,6 +138,7 @@ export const StoreProvider = ({
 
   useEffect(() => {
     const storedIncome = incomeLoader.load();
+    const storedExpenses = expensesLoader.load();
     const storedAssets = assetLoader.load();
     const storedAccounts = accountsLoader.load();
     const storedDailySpending = dailySpendingLoader.load();
@@ -135,7 +155,10 @@ export const StoreProvider = ({
         })),
       }));
 
-      setIncome((_) => convertedIncome);
+      setIncome(convertedIncome);
+
+      const jsonExpenses = JSON.parse(storedExpenses || "[]") as Expense[];
+      setExpenses(jsonExpenses);
 
       const jsonAssets = JSON.parse(storedAssets || "[]") as Asset[];
       setAssets(jsonAssets);
@@ -217,6 +240,18 @@ export const StoreProvider = ({
     setIncome(deleteIncome(itemToDelete));
   }, []);
 
+  const _addExpense = useCallback((itemToAdd: NewExpense): void => {
+    setExpenses(addNewExpense(itemToAdd));
+  }, []);
+
+  const _editExpense = useCallback((edittedItem: Expense): void => {
+    setExpenses(editExpense(edittedItem));
+  }, []);
+
+  const _deleteExpense = useCallback((itemToDelete: Expense): void => {
+    setExpenses(deleteExpense(itemToDelete));
+  }, []);
+
   const _addAsset = useCallback((itemToAdd: NewAsset): void => {
     setAssets(addNewAsset(itemToAdd));
   }, []);
@@ -253,6 +288,11 @@ export const StoreProvider = ({
         addAccount: _addAccount,
         editAccount: _editAccount,
         deleteAccount: _deleteAccount,
+
+        expenses,
+        addExpense: _addExpense,
+        editExpense: _editExpense,
+        deleteExpense: _deleteExpense,
       }}
     >
       {children}

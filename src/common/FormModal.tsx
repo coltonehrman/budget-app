@@ -28,12 +28,14 @@ export default function FormModal({
   title,
   open,
   setOpen,
+  onClose,
   onSubmit,
   inputs,
 }: {
   title: string;
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onClose?: () => void;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   onSubmit: () => void;
   inputs: IInput[];
 }): JSX.Element {
@@ -42,6 +44,7 @@ export default function FormModal({
       <Modal
         open={open}
         onClose={() => {
+          onClose && onClose();
           if (setOpen != null) setOpen(false);
         }}
       >
@@ -67,72 +70,6 @@ export default function FormModal({
                 </AccordionDetails>
               </Accordion>
             ))}
-
-            {/* <Accordion defaultExpanded>
-              <AccordionSummary>
-                <Typography level="title-sm">Type</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ my: 2 }}>
-                  <Select
-                    defaultValue={state.type ?? "checking"}
-                    onChange={(_e, value) => {
-                      setState({
-                        ...state,
-                        type: value ?? "checking",
-                      });
-                    }}
-                  >
-                    <Option value="checking">Checking</Option>
-                    <Option value="savings">Savings</Option>
-                    <Option value="credit">Credit</Option>
-                    <Option value="investment">Investment</Option>
-                  </Select>
-                </Box>
-              </AccordionDetails>
-            </Accordion>
-
-            <Accordion defaultExpanded>
-              <AccordionSummary>
-                <Typography level="title-sm">Balance</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ my: 2 }}>
-                  <Input
-                    value={state.balance}
-                    onChange={(e) => {
-                      const newValue = Number(e.target.value);
-
-                      setState({
-                        ...state,
-                        balance: Number.isNaN(newValue) ? 0 : newValue,
-                      });
-                    }}
-                    placeholder="$ 0"
-                  />
-                </Box>
-              </AccordionDetails>
-            </Accordion>
-
-            <Accordion defaultExpanded>
-              <AccordionSummary>
-                <Typography level="title-sm">URL Link</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ my: 2 }}>
-                  <Input
-                    value={state.link}
-                    onChange={(e) => {
-                      setState({
-                        ...state,
-                        link: e.target.value,
-                      });
-                    }}
-                    placeholder="https://example.com"
-                  />
-                </Box>
-              </AccordionDetails>
-            </Accordion> */}
           </AccordionGroup>
 
           <Divider sx={{ my: 2 }} />

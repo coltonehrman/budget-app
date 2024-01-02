@@ -1,5 +1,6 @@
 import {
   AttachMoneyOutlined,
+  CurrencyExchange,
   Dashboard,
   Home,
   Savings,
@@ -20,7 +21,8 @@ import { Store } from "./store";
 
 export default function Sidebar(): JSX.Element {
   const { pathname } = useLocation();
-  const { income, accounts, assets, budget, loans } = useContext(Store);
+  const { income, expenses, accounts, assets, budget, loans } =
+    useContext(Store);
 
   return (
     <List
@@ -52,6 +54,20 @@ export default function Sidebar(): JSX.Element {
               <Box display="flex" gap={1}>
                 <Typography level="title-sm">Income</Typography>
                 <Chip size="sm">{income.length}</Chip>
+              </Box>
+            </RouterLink>
+          </ListItemContent>
+        </ListItemButton>
+      </ListItem>
+
+      <ListItem>
+        <ListItemButton selected={pathname === "/expenses"}>
+          <CurrencyExchange />
+          <ListItemContent>
+            <RouterLink to="/expenses" style={{ textDecoration: "none" }}>
+              <Box display="flex" gap={1}>
+                <Typography level="title-sm">Expenses</Typography>
+                <Chip size="sm">{expenses.length}</Chip>
               </Box>
             </RouterLink>
           </ListItemContent>
