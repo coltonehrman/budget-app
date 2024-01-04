@@ -43,10 +43,10 @@ export default function MainDashboard(): JSX.Element {
     addDailySpending,
     dailySpending,
     income,
+    expenses,
     accounts,
     assets,
     loans,
-    budget,
   } = useContext(Store);
   const [didEnterDailyPrompt, setDidEnterDailyPrompt] = useState(true);
 
@@ -63,26 +63,40 @@ export default function MainDashboard(): JSX.Element {
   }, [dailySpending]);
 
   const getDailyAllowedSpending = (): number => {
-    const dailyAverageIncome = parseFloat(
-      income
-        .reduce((dailyAverage, income) => {
-          const sumPayDays = income.payDays.reduce(
+    const dailyAverageIncome = income.reduce((dailyAverage, income) => {
+      const sumPayDays = income.payDays.reduce(
+        (sum, pay) => sum + pay.amount,
+        0,
+      );
+      const avgPayDay = sumPayDays / income.payDays.length;
+      let incomeDailyAverage = 0;
+
+      if (income.payDayOccurance === "bi-weekly") {
+        incomeDailyAverage = (avgPayDay * 26) / 365;
+      }
+
+      return dailyAverage + incomeDailyAverage;
+    }, 0);
+
+    const dailyAverageExpense = expenses.reduce(
+      (totalDailyAverage, expense) => {
+        if (expense.occurance === "monthly") {
+          const monthlySum = expense.payments.reduce(
             (sum, pay) => sum + pay.amount,
             0,
           );
-          const avgPayDay = sumPayDays / income.payDays.length;
-          let incomeDailyAverage = 0;
+          const monthylyAverage = monthlySum / expense.payments.length;
+          const dailyAverage = (monthylyAverage * 12) / 365;
 
-          if (income.payDayOccurance === "bi-weekly") {
-            incomeDailyAverage = (avgPayDay * 26) / 365;
-          }
+          return totalDailyAverage + dailyAverage;
+        }
 
-          return dailyAverage + incomeDailyAverage;
-        }, 0)
-        .toFixed(2),
+        return totalDailyAverage;
+      },
+      0,
     );
 
-    return dailyAverageIncome;
+    return parseFloat((dailyAverageIncome - dailyAverageExpense).toFixed(2));
   };
 
   const firstDayBudget = Object.keys(dailySpending ?? {}).reduce(

@@ -158,7 +158,17 @@ export const StoreProvider = ({
       setIncome(convertedIncome);
 
       const jsonExpenses = JSON.parse(storedExpenses || "[]") as Expense[];
-      setExpenses(jsonExpenses);
+
+      const convertedExpenses = jsonExpenses.map((i: any) => ({
+        ...i,
+        startDate: new Date((i.startDate as string) ?? ""),
+        payments: (i.payments ?? []).map((p: any) => ({
+          ...p,
+          date: new Date((p.date as string) ?? ""),
+        })),
+      }));
+
+      setExpenses(convertedExpenses);
 
       const jsonAssets = JSON.parse(storedAssets || "[]") as Asset[];
       setAssets(jsonAssets);
