@@ -11,15 +11,41 @@ import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-import React, { useContext, useState } from "react";
-import LoanModal from "./LoanModal";
-import { calculateMonthlyPayment } from "./loan";
+import React, { useCallback, useContext, useState } from "react";
+import LoanForm, { DEFAULT_STATE } from "./LoanForm";
+import { LoanWithoutID, calculateMonthlyPayment } from "./loan";
 import { formatDate } from "../common/date";
 import { Store } from "../store";
+import { Modal, Slot } from "../common/Modal";
 
 export default function LoanDashboard(): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { loans, addLoan, deleteLoan } = useContext(Store);
+
+  const [loan, setLoan] = useState<LoanWithoutID>(DEFAULT_STATE);
+  const [inputDate, setInputDate] = useState(formatDate(loan.maturityDate));
+
+  const onFormSubmit = useCallback(() => {
+    const newDate = new Date(inputDate);
+
+    if (newDate.toString() === "Invalid Date") {
+      return;
+    }
+
+    const newLoan = {
+      ...loan,
+      // @ts-expect-error TODO: fix types for input
+      balance: parseFloat(loan.balance),
+      // @ts-expect-error TODO: fix types for input
+      apy: parseFloat(loan.apy),
+      // @ts-expect-error TODO: fix types for input
+      originalBalance: parseFloat(loan.originalBalance),
+    };
+
+    console.log(newLoan);
+
+    setLoan(DEFAULT_STATE);
+  }, [loan, inputDate]);
 
   return (
     <>
@@ -38,14 +64,32 @@ export default function LoanDashboard(): JSX.Element {
         </Button>
       </Box>
 
-      <LoanModal
+      <Modal
+        title="Add Loan"
         open={isModalOpen}
-        setOpen={setIsModalOpen}
-        onSubmit={(loan) => {
-          addLoan(loan);
-          setIsModalOpen(false);
-        }}
-      />
+        close={() => setIsModalOpen(false)}
+      >
+        <Slot type="body">
+          <LoanForm
+            loan={loan}
+            setLoan={setLoan}
+            inputDate={inputDate}
+            setInputDate={setInputDate}
+          />
+        </Slot>
+
+        <Slot type="button">
+          <Button
+            color="primary"
+            onClick={() => {
+              onFormSubmit();
+              setIsModalOpen(false);
+            }}
+          >
+            Submit
+          </Button>
+        </Slot>
+      </Modal>
 
       <Box
         sx={{

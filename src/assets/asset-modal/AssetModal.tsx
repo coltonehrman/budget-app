@@ -1,22 +1,17 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Button from "@mui/joy/Button";
-import Box from "@mui/joy/Box";
-import Typography from "@mui/joy/Typography";
-import AccordionGroup from "@mui/joy/AccordionGroup";
-import Accordion from "@mui/joy/Accordion";
-import AccordionSummary from "@mui/joy/AccordionSummary";
-import AccordionDetails from "@mui/joy/AccordionDetails";
-import {
-  Modal,
-  Divider,
-  ModalClose,
-  ModalDialog,
-  Sheet,
-  Input,
-} from "@mui/joy";
+import { AccordionGroup, Checkbox, Input } from "@mui/joy";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import { type NewAsset, type Asset } from "../asset";
+import { Modal, Slot } from "../../common/Modal";
+import { Store } from "../../store";
+import { AccordionSection } from "../../common/AccordionSection";
+import LoanForm, {
+  DEFAULT_STATE as LOAN_DEFAULT_STATE,
+} from "../../loans/LoanForm";
+import { LoanWithoutID } from "../../loans/loan";
+import { formatDate } from "../../common/date";
 
 const DEFAULT_STATE: NewAsset = {
   name: "",
@@ -37,70 +32,74 @@ export default function AssetModal({
   onSubmit: (asset: NewAsset) => void;
   initialState?: Asset;
 }): JSX.Element {
+  const { loans } = useContext(Store);
   const [state, setState] = useState<NewAsset>(initialState ?? DEFAULT_STATE);
+  const [hasLoan, setHasLoan] = useState(false);
+
+  const [loan, setLoan] = useState<LoanWithoutID>(LOAN_DEFAULT_STATE);
+  const [inputDate, setInputDate] = useState(formatDate(loan.maturityDate));
 
   return (
-    <>
-      <Modal
-        open={open}
-        onClose={() => {
-          if (setOpen != null) setOpen(false);
-        }}
-      >
-        <ModalDialog minWidth={550}>
-          <ModalClose />
-          <Typography level="h4">{title}</Typography>
-          <AccordionGroup>
-            <Accordion defaultExpanded>
-              <AccordionSummary>
-                <Typography level="title-sm">Name</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ my: 2 }}>
-                  <Input
-                    autoFocus={true}
-                    onChange={(e) => {
-                      setState({
-                        ...state,
-                        name: e.target.value,
-                      });
-                    }}
-                    value={state.name}
-                    placeholder="Name"
-                  />
-                </Box>
-              </AccordionDetails>
-            </Accordion>
+    <Modal title={title} open={open} close={() => setOpen(false)}>
+      <Slot type="body">
+        <AccordionGroup>
+          <AccordionSection title="Name">
+            <Input
+              autoFocus={true}
+              onChange={(e) => {
+                setState({
+                  ...state,
+                  name: e.target.value,
+                });
+              }}
+              value={state.name}
+              placeholder="Name"
+            />
+          </AccordionSection>
 
-            <Accordion defaultExpanded>
-              <AccordionSummary>
-                <Typography level="title-sm">Type</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ my: 2 }}>
-                  <Select
-                    defaultValue={state.type ?? "house"}
-                    onChange={(_e, value) => {
-                      setState({
-                        ...state,
-                        type: value ?? "house",
-                      });
-                    }}
-                  >
-                    <Option value="house">House</Option>
-                    <Option value="car">Car</Option>
-                  </Select>
-                </Box>
-              </AccordionDetails>
-            </Accordion>
+          <AccordionSection title="Type">
+            <Select
+              defaultValue={state.type ?? "house"}
+              onChange={(_e, value) => {
+                setState({
+                  ...state,
+                  type: value ?? "house",
+                });
+              }}
+            >
+              <Option value="house">House</Option>
+              <Option value="car">Car</Option>
+            </Select>
+          </AccordionSection>
 
-            <Accordion defaultExpanded>
-              <AccordionSummary>
-                <Typography level="title-sm">Value</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ my: 2 }}>
+          <AccordionSection title="Value">
+            <Input
+              value={state.value}
+              onChange={(e) => {
+                const newValue = Number(e.target.value);
+
+                setState({
+                  ...state,
+                  value: Number.isNaN(newValue) ? 0 : newValue,
+                });
+              }}
+              placeholder="$ 0"
+            />
+          </AccordionSection>
+
+          <AccordionSection title="Loan">
+            <>
+              <Checkbox
+                label="Has a Loan?"
+                checked={hasLoan}
+                onChange={(e) => setHasLoan(e.target.checked)}
+              />
+
+              {hasLoan && (
+                <>
+                  {console.log(loans)}
                   <Input
+                    sx={{ marginTop: 2 }}
                     value={state.value}
                     onChange={(e) => {
                       const newValue = Number(e.target.value);
@@ -112,26 +111,31 @@ export default function AssetModal({
                     }}
                     placeholder="$ 0"
                   />
-                </Box>
-              </AccordionDetails>
-            </Accordion>
-          </AccordionGroup>
 
-          <Divider sx={{ my: 2 }} />
+                  <LoanForm
+                    loan={loan}
+                    setLoan={setLoan}
+                    setInputDate={setInputDate}
+                    inputDate={inputDate}
+                  />
+                </>
+              )}
+            </>
+          </AccordionSection>
+        </AccordionGroup>
+      </Slot>
 
-          <Sheet sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Button
-              color="primary"
-              onClick={() => {
-                onSubmit(state);
-                setState(DEFAULT_STATE);
-              }}
-            >
-              Submit
-            </Button>
-          </Sheet>
-        </ModalDialog>
-      </Modal>
-    </>
+      <Slot type="button">
+        <Button
+          color="primary"
+          onClick={() => {
+            onSubmit(state);
+            setState(DEFAULT_STATE);
+          }}
+        >
+          Submit
+        </Button>
+      </Slot>
+    </Modal>
   );
 }
