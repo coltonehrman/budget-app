@@ -5,6 +5,12 @@ import express from "express";
 
 const app = express();
 
+app.use((req, res, next) => {
+  console.log(req.originalUrl);
+  console.log(req.protocol, req.hostname, req.baseUrl, req.headers);
+  next();
+});
+
 app.use("/budget-app", express.static("dist"));
 app.use("/budget-app", express.static("build"));
 

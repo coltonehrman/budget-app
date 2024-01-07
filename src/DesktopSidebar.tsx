@@ -56,7 +56,7 @@ export default function DesktopSidebar(): JSX.Element {
         <IconButton variant="soft" color="primary" size="sm">
           <MoneyOutlined />
         </IconButton>
-        <Typography level="title-lg">COCO Budgeter</Typography>
+        <Typography level="title-lg">Budgeter</Typography>
       </Box>
       <Input
         size="sm"
