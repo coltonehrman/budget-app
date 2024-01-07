@@ -20,4 +20,7 @@ if (process.env.HTTPS_PRIVATE_KEY && process.env.HTTPS_CERT) {
 const httpServer = http.createServer(app);
 
 httpServer.listen(80);
-httpsServer.listen(443);
+
+if (httpsServer) {
+  httpsServer.listen(443);
+}
