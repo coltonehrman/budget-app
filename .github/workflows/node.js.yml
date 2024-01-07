@@ -36,6 +36,5 @@ jobs:
         path: |
           build
           dist
-          node_modules
           vite.config.ts
           package.json
