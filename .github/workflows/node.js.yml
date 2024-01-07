@@ -31,11 +31,14 @@ jobs:
       - run: chmod 400 key.pem
       # Test SSH command
       - run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "ls -al"
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d-%s')"
       - uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "prod-server.js,build/*,dist/*,package-lock.json,package.json,vite.config.ts"
-          target: /tmp/archive
+          target: /tmp/archive-${{ steps.date.outputs.date }}
       - run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "ls -al"
