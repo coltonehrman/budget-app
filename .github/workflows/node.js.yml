@@ -40,10 +40,16 @@ jobs:
           dist
           vite.config.ts
           package.json
+    - run: pwd
+    - run: ls -R
+    - uses: actions/download-artifact@v4
+      with:
+        name: dist-without-markdown
+        path: /tmp/archive
     - name: Copy single file to remote
       uses: garygrossgarten/github-action-scp@release
       with:
-        local: dist-without-markdown
+        local: /tmp/archive
         remote: /tmp/archive
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
