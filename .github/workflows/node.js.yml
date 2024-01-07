@@ -44,4 +44,7 @@ jobs:
       - name: Install App on EC2
         run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/install-app.sh archive-${{ steps.date.outputs.date }}"
         continue-on-error: true
-      - run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "ls -al"
+      - name: Stop App on EC2
+        run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/kill-existing-app.sh"
+      - name: Start New App on EC2
+        run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/run-app.sh"
