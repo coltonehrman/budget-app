@@ -39,6 +39,6 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "build/*,vite.config.ts,package.json"
+        source: "build/*,dist/*,package.json,vite.config.ts"
         target: /tmp/archive.zip
     - run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "ls -al"
