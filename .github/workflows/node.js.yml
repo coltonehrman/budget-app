@@ -31,7 +31,9 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
+    - run: echo ${{ secrets.SSH_PRIVATE_KEY }} > key.pem
     - run: ls -al
+    - run: ssh -i key.pem -t ${{ secrets.USERNAME }}@${{ secrets.HOST }} "ls -al"
     - uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.HOST }}
