@@ -41,4 +41,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "prod-server.js,build/*,dist/*,package-lock.json,package.json,vite.config.ts"
           target: /tmp/archive-${{ steps.date.outputs.date }}
+      - run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/install-app.sh archive-${{ steps.date.outputs.date }}"
       - run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "ls -al"
