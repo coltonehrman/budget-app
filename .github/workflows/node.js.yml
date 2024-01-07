@@ -46,5 +46,6 @@ jobs:
         continue-on-error: true
       - name: Stop App on EC2
         run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/kill-existing-app.sh"
+        continue-on-error: true
       - name: Start New App on EC2
         run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/run-app.sh"
