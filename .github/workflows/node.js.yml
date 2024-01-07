@@ -29,6 +29,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: 🔎 Check IP
+      run: curl https://api.ipify.org
     - run: npm ci
     - run: npm run build --if-present
     - name: Archive production artifacts
