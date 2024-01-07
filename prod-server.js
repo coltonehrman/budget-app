@@ -6,6 +6,10 @@ import express from "express";
 const app = express();
 
 app.use((req, res, next) => {
+  req.secure ? next() : res.redirect("https://" + req.headers.host + req.url);
+});
+
+app.use((req, res, next) => {
   console.log(req.originalUrl);
   console.log(req.protocol, req.hostname, req.baseUrl, req.headers);
   next();
