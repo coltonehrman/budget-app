@@ -48,11 +48,13 @@ window.__export_local_storage = () => {
       "href",
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       "data:application/json;charset=utf-8," +
-        "{" +
-        Object.keys(localStorage)
-          .map((key) => `"${key}": ${localStorage.getItem(key)}`)
-          .join(",") +
-        "}",
+        encodeURIComponent(
+          "{" +
+            Object.keys(localStorage)
+              .map((key) => `"${key}": ${localStorage.getItem(key)}`)
+              .join(",") +
+            "}",
+        ),
     );
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
