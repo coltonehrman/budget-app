@@ -42,8 +42,7 @@ export default function LoanDashboard(): JSX.Element {
       originalBalance: parseFloat(loan.originalBalance),
     };
 
-    console.log(newLoan);
-
+    addLoan(newLoan);
     setLoan(DEFAULT_STATE);
   }, [loan, inputDate]);
 

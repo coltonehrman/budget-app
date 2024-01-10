@@ -139,6 +139,7 @@ export const StoreProvider = ({
   useEffect(() => {
     const storedIncome = incomeLoader.load();
     const storedExpenses = expensesLoader.load();
+    const storedLoans = loansLoader.load();
     const storedAssets = assetLoader.load();
     const storedAccounts = accountsLoader.load();
     const storedDailySpending = dailySpendingLoader.load();
@@ -159,16 +160,23 @@ export const StoreProvider = ({
 
       const jsonExpenses = JSON.parse(storedExpenses || "[]") as Expense[];
 
-      const convertedExpenses = jsonExpenses.map((i: any) => ({
+      const convertedExpenses = jsonExpenses.map((i: Expense) => ({
         ...i,
-        startDate: new Date((i.startDate as string) ?? ""),
+        startDate: new Date(i.startDate ?? ""),
         payments: (i.payments ?? []).map((p: any) => ({
           ...p,
           date: new Date((p.date as string) ?? ""),
         })),
       }));
 
-      setExpenses(convertedExpenses);
+      const jsonLoans = JSON.parse(storedLoans || "[]") as Loan[];
+
+      const covertedLoans = jsonLoans.map((i: Loan) => ({
+        ...i,
+        maturityDate: new Date(i.maturityDate ?? ""),
+      }));
+
+      setLoans(covertedLoans);
 
       const jsonAssets = JSON.parse(storedAssets || "[]") as Asset[];
       setAssets(jsonAssets);
