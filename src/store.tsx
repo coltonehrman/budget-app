@@ -169,6 +169,8 @@ export const StoreProvider = ({
         })),
       }));
 
+      setExpenses(convertedExpenses);
+
       const jsonLoans = JSON.parse(storedLoans || "[]") as Loan[];
 
       const covertedLoans = jsonLoans.map((i: Loan) => ({
