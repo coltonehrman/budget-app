@@ -68,7 +68,10 @@ export default function MainDashboard(): JSX.Element {
         (sum, pay) => sum + pay.amount,
         0,
       );
-      const avgPayDay = sumPayDays / income.payDays.length;
+
+      const avgPayDay =
+        sumPayDays === 0 ? 0 : sumPayDays / income.payDays.length;
+
       let incomeDailyAverage = 0;
 
       if (income.payDayOccurance === "bi-weekly") {
@@ -99,6 +102,7 @@ export default function MainDashboard(): JSX.Element {
     return parseFloat((dailyAverageIncome - dailyAverageExpense).toFixed(2));
   };
 
+  // the day that you first submitted a daily spend amount
   const firstDayBudget = Object.keys(dailySpending ?? {}).reduce(
     (firstDay, date) => {
       if (new Date(firstDay) < new Date(date)) return firstDay;
@@ -116,6 +120,7 @@ export default function MainDashboard(): JSX.Element {
   }, 0);
 
   const daysSinceFirstDayBudget = differenceInDays(new Date(), firstDayBudget);
+
   const totalBudget =
     Object.keys(dailySpending ?? {}).reduce(
       (sum, date) => sum + ((dailySpending ?? {})[date]?.dailyBudget ?? 0),
