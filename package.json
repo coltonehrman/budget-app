@@ -8,8 +8,7 @@
     "start": "node prod-server.js",
     "dev": "vite",
     "build": "tsc && vite build",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Colton Ehrman <coltonje95@gmail.com>",
   "license": "MIT",
