@@ -23,29 +23,32 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+
+      # Install
       - run: npm ci
+
+      # Build
       - run: npm run build --if-present
+
       # Create a local key file for SSH access
       - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+
       # Modify permissions to make SSG server happy :)
       - run: chmod 400 key.pem
-      # Test SSH command
-      - run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "ls -al"
+
+      # Get current date
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d-%s')"
+
+      # Copy files to EC2
       - uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "prod-server.js,build/*,dist/*,package-lock.json,package.json,vite.config.ts"
-          target: /tmp/archive-${{ steps.date.outputs.date }}
+          source: "build/*,dist/*"
+          target: /tmp/budget-app-${{ steps.date.outputs.date }}
+
       - name: Install App on EC2
-        run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/install-app.sh archive-${{ steps.date.outputs.date }}"
-        continue-on-error: true
-      - name: Stop App on EC2
-        run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/kill-existing-app.sh"
-        continue-on-error: true
-      - name: Start New App on EC2
-        run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/run-app.sh"
+        run: ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "sudo -E bash ~/ec2-scripts/install-app.sh budget-app ${{ steps.date.outputs.date }}"
